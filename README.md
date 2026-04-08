@@ -12,6 +12,7 @@ The project follows a monolyth architecture pattern with the following component
 
 - **Web Server (server)**: PHP 8.4 running on Apache with PDO/MySQL support
 - **Database (mysql)**: MySQL 8.0 database server
+- **Chat Server (chat-server)**: C++17 WebSocket server built with Boost.Beast and OpenSSL
 
 ### Service Communication
 
@@ -35,6 +36,9 @@ GPEHEI_LEGACY/
 │       ├── database.php        # Database connection logic
 │       ├── happy_path.php      # Happy path test script
 │       └── hello.php           # Hello world example
+├── chat-app/                    # C++ WebSocket chat server
+│   ├── Dockerfile              # Docker image configuration for the chat server
+│   └── main.cpp                # WebSocket server entrypoint
 ```
 
 ## Prerequisites
@@ -70,9 +74,10 @@ docker compose up --build
 
 This command will:
 - Build the PHP/Apache Docker image from the Dockerfile in the `admin/` directory
+- Build the C++ chat server image from the Dockerfile in the `chat-app/` directory
 - Pull the MySQL 8.0 image from Docker Hub
-- Start both containers
-- Display logs from both services
+- Start all containers
+- Display logs from all services
 - Create a named volume for MySQL data persistence
 
 To start services without rebuilding images (if they already exist):
@@ -119,6 +124,20 @@ Once the services are running, access the PHP web application at:
 - Hello endpoint: http://localhost:9000/hello.php
 - Happy path: http://localhost:9000/happy_path.php
 
+### WebSocket Chat Server
+
+Once the services are running, the C++ WebSocket server is available at:
+
+- WebSocket URL: ws://localhost:8080
+
+You can test it with a WebSocket client such as `wscat`:
+
+```bash
+npx wscat -c ws://localhost:8080
+```
+
+Messages sent to the server are echoed back.
+
 ### MySQL Database
 
 Connect to the MySQL database using:
@@ -150,10 +169,22 @@ Note: This will fail unless MySQL is running elsewhere, as the web server depend
 docker compose up mysql
 ```
 
+### Run Only The Chat Server
+
+```bash
+docker compose up chat-server --build
+```
+
 ### Build Only the Web Server Image
 
 ```bash
 docker compose build server
+```
+
+### Build Only the Chat Server Image
+
+```bash
+docker compose build chat-server
 ```
 
 ### Rebuild All Images
@@ -175,6 +206,7 @@ View logs from a specific service:
 ```bash
 docker compose logs server
 docker compose logs mysql
+docker compose logs chat-server
 ```
 
 Follow logs in real-time:
@@ -187,6 +219,12 @@ docker compose logs -f
 Run a command in the web server container:
 ```bash
 docker compose exec server bash
+```
+
+Run a shell in the chat server container:
+
+```bash
+docker compose exec chat-server bash
 ```
 
 Run a PHP command:

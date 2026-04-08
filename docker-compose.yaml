@@ -25,5 +25,12 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+  chat-server:
+    build:
+      context: ./chat-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
 volumes:
   mysql-data:

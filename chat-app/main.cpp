@@ -44,7 +44,7 @@ int main() {
         // Listen on port 8080
         tcp::acceptor acceptor(ioc, {tcp::v4(), 8080});
 
-        std::cout << "🚀 WebSocket server running on port 8080..." << std::endl;
+        std::cout << "WebSocket server running on port 8080..." << std::endl;
 
         while (true) {
             tcp::socket socket(ioc);
