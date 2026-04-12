@@ -8,9 +8,15 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY main.cpp ./
+COPY src/        ./src/
+COPY jwt-cpp/    ./jwt-cpp/
+COPY picojson/   ./picojson/
 
-RUN g++ main.cpp \
+RUN g++ \
+        src/main.cpp \
+        src/server/Server.cpp \
+        src/server/Session.cpp \
+    -Isrc \
     -O2 \
     -std=c++17 \
     -pthread \
