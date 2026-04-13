@@ -4,6 +4,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libboost-all-dev \
         libssl-dev \
+        libmariadb-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -16,6 +17,7 @@ RUN g++ \
         src/main.cpp \
         src/server/Server.cpp \
         src/server/Session.cpp \
+        src/db/Database.cpp \
     -Isrc \
     -O2 \
     -std=c++17 \
@@ -23,6 +25,7 @@ RUN g++ \
     -lboost_system \
     -lssl \
     -lcrypto \
+    -lmysqlclient \
     -o chat-server
 
 EXPOSE 8080
