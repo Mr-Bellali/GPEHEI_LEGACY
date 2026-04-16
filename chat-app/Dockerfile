@@ -17,8 +17,11 @@ RUN g++ \
         src/main.cpp \
         src/server/Server.cpp \
         src/server/Session.cpp \
+        src/server/SessionManager.cpp \
+        src/auth/JwtValidator.cpp \
         src/db/Database.cpp \
     -Isrc \
+    -I. \
     -O2 \
     -std=c++17 \
     -pthread \
