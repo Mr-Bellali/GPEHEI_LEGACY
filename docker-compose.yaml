@@ -10,9 +10,9 @@ services:
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_NAME: my_database
+      DB_NAME: EHEI_DB
       DB_USER: root
-      DB_PASSWORD: my-secret-pw
+      DB_PASSWORD: 12345678
     volumes:
       - ./teacher/src:/var/www/html
 
@@ -20,8 +20,8 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-      MYSQL_DATABASE: my_database
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: EHEI_DB
     ports:
       - "3306:3306"
     volumes:
