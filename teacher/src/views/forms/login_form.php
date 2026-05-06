@@ -53,7 +53,7 @@
 
     </div>
     <!-- Actions -->
-    <div class="flex flex-row items-center justify-between">
+    <div class="flex flex-row items-end justify-between">
         <button type="button" class="text-sm text-white/50 hover:text-white cursor-pointer ">
             Forgot password?
         </button>
