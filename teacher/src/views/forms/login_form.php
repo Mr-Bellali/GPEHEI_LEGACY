@@ -1,4 +1,5 @@
-<form action="" class="w-full h-full flex flex-col justify-between">
+<form method="post" action="index.php" class="w-full h-full flex flex-col justify-between">
+    <input type="hidden" name="type" value="login">
     <!-- Title & fields container -->
     <div class="flex flex-col gap-[50px] ">
         <h1 class="text-[64px] text-white">
