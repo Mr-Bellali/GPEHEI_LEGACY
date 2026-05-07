@@ -1,3 +1,3 @@
 <?php 
-echo"hello worlds";
+include("templates/dashboard_template.php");
 ?>
