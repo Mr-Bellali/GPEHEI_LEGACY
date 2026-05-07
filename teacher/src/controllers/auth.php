@@ -30,6 +30,8 @@ class AuthController
         $user = $this->authModel->login($email, $password);
 
         if (!$user) {
+            error_log("email: ,$email");
+            error_log("password: ,$password");
             $_SESSION['error'] = 'Invalid email or password';
             header('Location: index.php');
             exit;
