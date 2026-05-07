@@ -11,7 +11,7 @@ class AuthController
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             // If it's not a request, just show login page
-            include 'views/templates/auth_template.php';
+            include 'views/auth.php';
             return;
         }
 
