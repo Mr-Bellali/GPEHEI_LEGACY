@@ -23,17 +23,15 @@ class AuthController
         // Validation
         if (empty($email) || empty($password)) {
             $_SESSION['error'] = 'Please fill in all fields';
-            header('Location: index.php');
+            header('Location: index.php?action=login');
             exit;
         }
 
         $user = $this->authModel->login($email, $password);
 
         if (!$user) {
-            error_log("email: ,$email");
-            error_log("password: ,$password");
             $_SESSION['error'] = 'Invalid email or password';
-            header('Location: index.php');
+            header('Location: index.php?action=login');
             exit;
         }
 
@@ -48,17 +46,15 @@ class AuthController
             setcookie('remember_token', $token, time() + (7 * 24 * 60 * 60), '/', '', true, true);
         }
 
-        header('Location: /dashboard');
+        header('Location: index.php?action=home');
         exit;
     }
 
     public function logout(){
         session_destroy();
         setcookie('remember_token', '', time() - 3600, '/');
-        header('Location: index.php');
+        header('Location: index.php?action=login');
         exit;
     }
 }
-
-
 ?>
