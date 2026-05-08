@@ -131,7 +131,7 @@
     </style>
 </head>
 
-<body class="w-full h-screen bg-[#F0F0F0]">
+<body class="w-full h-screen bg-[#F0F0F0] px-6">
     <!-- Header -->
     <div class="w-full h-[50px] flex justify-between fixed top-[14px] left-0 px-6 z-50">
         <!-- Logo & search input container -->
