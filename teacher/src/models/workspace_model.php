@@ -24,6 +24,18 @@ class WorkspaceModel
         return $result ? $result : [];
     }
 
+    // Get ALL filieres (for the "All Filieres" option)
+    public function getAllFilieres()
+    {
+        $this->db->query('
+            SELECT id, name_filier, short_name
+            FROM filiere
+            ORDER BY name_filier
+        ');
+        $result = $this->db->resultSet();
+        return $result ? $result : [];
+    }
+
     // Get groups for a specific filiere and promotion
     public function getGroupsByFiliereAndPromotion($filiereId, $promotion)
     {

@@ -13,8 +13,8 @@
             <div class="hidden absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-lg py-1 min-w-[200px] z-50">
                 <?php if (!empty($filieres)): ?>
                     <?php foreach ($filieres as $filiere): ?>
-                        <a href="index.php?action=workspace&filiere_id=<?php echo $filiere->id; ?>" 
-                           class="block px-4 py-2 text-sm text-[#404359] hover:bg-gray-50 rounded-full">
+                        <a href="index.php?action=workspace&filiere_id=<?php echo $filiere->id; ?>"
+                            class="block px-4 py-2 text-sm text-[#404359] hover:bg-gray-50 rounded-full">
                             <?php echo htmlspecialchars($filiere->name_filier); ?>
                         </a>
                     <?php endforeach; ?>
@@ -25,80 +25,77 @@
         </div>
     </div>
 
-    <!-- Main content -->
+    <!-- Main content - Show ONLY levels that have groups -->
     <div class="flex flex-col gap-2">
         <?php
-        // Loop through academic levels 1-5 in order
-        for ($level = 1; $level <= 5; $level++) {
-            // Check if groupsByLevel exists and has the level
-            if (isset($groupsByLevel[$level]) && $groupsByLevel[$level]['total_groups'] > 0) {
-                $levelData = $groupsByLevel[$level];
-        ?>
-                <!-- <?php echo $levelData['name']; ?> -->
-                <div class="mb-6">
-                    <!-- Year's title -->
-                    <div class="w-full flex flex-col gap-1 mb-2">
-                        <h1 class="font-bold text-xl text-[#3D348B]">
-                            <?php echo htmlspecialchars($levelData['name']); ?>
-                        </h1>
-                        <hr class="border-[#3D348B]">
-                    </div>
+        // Check if groupsByLevel exists and has data
+        if (isset($groupsByLevel) && !empty($groupsByLevel)) {
+            // Loop through academic levels 1-5 in order
+            for ($level = 1; $level <= 5; $level++) {
+                // Only show the level if it has groups
+                if (isset($groupsByLevel[$level]) && $groupsByLevel[$level]['total_groups'] > 0) {
+                    $levelData = $groupsByLevel[$level];
+                    ?>
+                    <!-- <?php echo $levelData['name']; ?> -->
+                    <div class="mb-6">
+                        <!-- Year's title -->
+                        <div class="w-full flex flex-col gap-1 mb-2">
+                            <h1 class="font-bold text-xl text-[#3D348B]">
+                                <?php echo htmlspecialchars($levelData['name']); ?>
+                                <span class="text-sm font-normal text-gray-500 ml-2">
+                                    (<?php echo $levelData['total_groups']; ?> groups, <?php echo $levelData['total_students']; ?>
+                                    students)
+                                </span>
+                            </h1>
+                            <hr class="border-[#3D348B]">
+                        </div>
 
-                    <!-- A grid layout of all the classes -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        <?php foreach ($levelData['groups'] as $group): ?>
-                            <!-- A card for the group -->
-                            <div class="flex flex-col px-2 py-1 bg-[#7678ED] rounded-[10px] w-full min-w-[300px] gap-4 hover:shadow-lg transition-shadow cursor-pointer"
-                                 onclick="window.location.href='index.php?action=group&id=<?php echo $group->id; ?>'">
-                                <!-- Group's name -->
-                                <h2 class="text-xl text-white font-semibold">
-                                    Group <?php echo htmlspecialchars($group->group_name); ?>
-                                </h2>
-                                <!-- Basic group's info -->
-                                <div class="flex items-center justify-between text-white text-xs">
-                                    <p><?php echo htmlspecialchars($selectedFiliere->short_name ?? 'N/A'); ?></p>
-                                    <p class="flex items-center gap-1">
-                                        <span><i data-lucide="users" class="w-4 h-4"></i></span>
-                                        <?php echo $group->student_count; ?>
-                                    </p>
+                        <!-- A grid layout of all the classes -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            <?php foreach ($levelData['groups'] as $group): ?>
+                                <!-- A card for the group -->
+                                <div class="flex flex-col px-2 py-1 bg-[#7678ED] rounded-[10px] w-full min-w-[300px] gap-4 hover:shadow-lg transition-shadow cursor-pointer"
+                                    onclick="window.location.href='index.php?action=group&id=<?php echo $group->id; ?>'">
+                                    <!-- Group's name -->
+                                    <h2 class="text-xl text-white font-semibold">
+                                        Group <?php echo htmlspecialchars($group->group_name); ?>
+                                        <?php if (isset($group->filiere_name)): ?>
+                                            <span class="text-xs opacity-80">(<?php echo htmlspecialchars($group->filiere_name); ?>)</span>
+                                        <?php endif; ?>
+                                    </h2>
+                                    <!-- Basic group's info -->
+                                    <div class="flex items-center justify-between text-white text-xs">
+                                        <p><?php echo htmlspecialchars($selectedFiliere->short_name ?? ($group->filiere_name ?? 'N/A')); ?>
+                                        </p>
+                                        <p class="flex items-center gap-1">
+                                            <span><i data-lucide="users" class="w-4 h-4"></i></span>
+                                            <?php echo $group->student_count; ?>
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
-                </div>
-        <?php
-            }
-        }
-        ?>
-        
-        <!-- If no groups found in any level -->
-        <?php 
-        $hasAnyGroups = false;
-        if (isset($groupsByLevel)) {
-            foreach ($groupsByLevel as $levelData) {
-                if ($levelData['total_groups'] > 0) {
-                    $hasAnyGroups = true;
-                    break;
+                    <?php
                 }
             }
+        } else {
+            // No groups at all
+            echo '<div class="text-center py-12">
+                    <i data-lucide="inbox" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900">No groups found</h3>
+                    <p class="text-gray-500 mt-1">No groups available for this filiere.</p>
+                  </div>';
         }
         ?>
-        
-        <?php if (!$hasAnyGroups): ?>
-            <div class="text-center py-12">
-                <i data-lucide="inbox" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
-                <h3 class="text-lg font-medium text-gray-900">No groups found</h3>
-                <p class="text-gray-500 mt-1">No groups available for this filiere.</p>
-            </div>
-        <?php endif; ?>
     </div>
 
     <div></div>
 </div>
 
 <script>
-// Re-initialize Lucide icons after content loads
-if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-}
+    // Re-initialize Lucide icons after content loads
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 </script>
