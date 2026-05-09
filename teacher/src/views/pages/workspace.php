@@ -57,14 +57,10 @@
                                     <!-- Group's name -->
                                     <h2 class="text-xl text-white font-semibold">
                                         Group <?php echo htmlspecialchars($group->group_name); ?>
-                                        <?php if (isset($group->filiere_name)): ?>
-                                            <span class="text-xs opacity-80">(<?php echo htmlspecialchars($group->filiere_name); ?>)</span>
-                                        <?php endif; ?>
                                     </h2>
                                     <!-- Basic group's info -->
                                     <div class="flex items-center justify-between text-white text-xs">
-                                        <p><?php echo htmlspecialchars($selectedFiliere->short_name ?? ($group->filiere_name ?? 'N/A')); ?>
-                                        </p>
+                                        <p><?php echo htmlspecialchars($group->filiere_name); ?></p>
                                         <p class="flex items-center gap-1">
                                             <span><i data-lucide="users" class="w-4 h-4"></i></span>
                                             <?php echo $group->student_count; ?>
