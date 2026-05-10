@@ -49,6 +49,12 @@ class Router
 
 // Register routes
 $router = new Router();
+
+// Auth routes (public)
+$authController = new AuthController(new AuthService());
+$router->post('/auth/login',    [$authController, 'login']);
+
+// Teacher Router, To be removed
 $controller = new TeacherController(new TeacherService());
 
 $router->get('/teachers', [$controller, 'index']);
@@ -56,5 +62,7 @@ $router->get('/teachers/:id', [$controller, 'show']);
 $router->post('/teachers', [$controller, 'store']);
 $router->put('/teachers/:id', [$controller, 'update']);
 $router->delete('/teachers/:id', [$controller, 'destroy']);
+
+
 
 $router->dispatch();
