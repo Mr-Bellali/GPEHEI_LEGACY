@@ -1,7 +1,7 @@
 services:
-  server:
+  teacher-api:
     build:
-      context: ./teacher
+      context: ./teacher_api
       dockerfile: Dockerfile
     ports:
       - "9000:80"
@@ -14,7 +14,7 @@ services:
       DB_USER: root
       DB_PASSWORD: 12345678
     volumes:
-      - ./teacher/src:/var/www/html
+      - ./teacher_api/src:/var/www/html
 
   mysql:
     image: mysql:8.0
