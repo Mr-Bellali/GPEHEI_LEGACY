@@ -54,6 +54,16 @@ $router = new Router();
 $authController = new AuthController(new AuthService());
 $router->post('/auth/login',    [$authController, 'login']);
 
+// Workspace routes
+$workspaceController = new WorkspaceController(New WorkspaceService());
+$router->get('/workspace/modules', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+
+    // Inject auth id into params
+    $p['id'] = $_REQUEST['auth']['sub'];
+    $workspaceController->index($p);
+});
+
 // Teacher Router, To be removed
 $controller = new TeacherController(new TeacherService());
 

@@ -13,5 +13,9 @@ require_once 'controller/teacherController.php';
 require_once 'service/authService.php';
 require_once 'controller/authController.php';
 
+// Workspace
+require_once 'service/workspaceService.php';
+require_once 'controller/workspaceController.php';
+
 // Always last
 require_once 'router/api.php';
