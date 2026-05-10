@@ -3,9 +3,9 @@ class Database
 {
     private static ?Database $instance = null;
 
-    private $host   = 'mysql';
-    private $user   = 'root';
-    private $pass   = '12345678';
+    private $host = 'mysql';
+    private $user = 'root';
+    private $pass = '12345678';
     private $dbname = 'EHEI_DB';
 
     private $dbh;
@@ -14,10 +14,10 @@ class Database
 
     private function __construct()
     {
-        $dsn     = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
+        $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
         $options = [
             PDO::ATTR_PERSISTENT => true,
-            PDO::ATTR_ERRMODE    => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         ];
 
         try {
@@ -29,7 +29,9 @@ class Database
     }
 
     // Block cloning
-    private function __clone() {}
+    private function __clone()
+    {
+    }
 
     // The singleton entry point
     public static function getInstance(): self
@@ -86,5 +88,10 @@ class Database
     public function rowCount()
     {
         return $this->stmt->rowCount();
+    }
+
+    public function lastInsertId(): string
+    {
+        return $this->dbh->lastInsertId();
     }
 }
