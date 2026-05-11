@@ -49,6 +49,7 @@ public class Validator {
         int len = value.trim().length();
         return len >= min && len <= max;
     }
+    
 }
 
 /*if (!Validator.isValidEmail(email)) {

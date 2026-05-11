@@ -7,12 +7,11 @@ public class Groupe {
     private int id;
     private String name;
     private String description;
-
+    private int Level;
     private GroupeStatus status;
 
     // Relation (many groups → one filiere)
     private int filiereId;
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -21,12 +20,13 @@ public class Groupe {
 
     public Groupe(int id, String name, String description,
                   GroupeStatus status, int filiereId,
-                  LocalDateTime createdAt, LocalDateTime updatedAt) {
+                  LocalDateTime createdAt,int Level, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
         this.filiereId = filiereId;
+        this.Level=Level;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

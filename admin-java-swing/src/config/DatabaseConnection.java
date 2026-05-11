@@ -18,8 +18,14 @@ public class DatabaseConnection {
     // DB CONFIG
     private static final String URL =
             "jdbc:mysql://localhost:3306/GPEHEI_LEGACY";
-    private static final String USER = "root";
-    private static final String PASSWORD = ""; // change if needed
+    //in windows
+    //private static final String USER = "root";
+    //private static final String PASSWORD = ""; // change if needed
+    //in ubuntu check buttom script
+    private static final String USER = "javauser";
+    private static final String PASSWORD = "1234";
+
+
 
     private DatabaseConnection() {
         try {
@@ -51,6 +57,17 @@ public class DatabaseConnection {
 
     // Get connection
     public Connection getConnection() {
+        try {
+            // Check if connection is null or closed
+            if (connection == null || connection.isClosed()) {
+                System.out.println("[DB] Connection was closed, reconnecting...");
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("[DB] Reconnected successfully.");
+            }
+        } catch (SQLException e) {
+            System.err.println("[DB ERROR] Failed to reconnect");
+            e.printStackTrace();
+        }
         return connection;
     }
 
@@ -58,12 +75,56 @@ public class DatabaseConnection {
     public void closeConnection() {
         if (connection != null) {
             try {
-                connection.close();
-                System.out.println("[DB] Connection closed.");
+                if (!connection.isClosed()) {
+                    connection.close();
+                    System.out.println("[DB] Connection closed.");
+                }
             } catch (SQLException e) {
                 System.err.println("[DB ERROR] Failed to close connection");
                 e.printStackTrace();
             }
         }
     }
+
+    // Check if connection is alive
+    public boolean isConnected() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 }
+
+/* if want to use ubuntu
+1-install mysql use command
+sudo apt update
+sudo apt install mysql-server -y
+2-strat service use command to start and enabled or stop if finish work
+sudo systemctl start mysql
+sudo systemctl enable mysql
+3- to check if all good use status to know
+sudo systemctl status mysql
+4- to login in mysql use command
+sudo mysql
+after u can use lang sql normal like
+
+create database GPEHEI_LEGACY;....
+after finish use command
+exit;
+----------------------------
+now if want to connect ur project java with mysql important to creat user for java to get permistion
+step 1
+check if mysql run
+sudo systemctl status mysql
+if not run
+after now create user login sql
+sudo mysql;
+
+use this create :
+
+CREATE USER 'javauser'@'localhost' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON GPEHEI_LEGACY.* TO 'javauser'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+ */

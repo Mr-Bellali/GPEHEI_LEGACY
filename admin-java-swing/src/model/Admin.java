@@ -117,4 +117,8 @@ public class Admin {
                 ", status=" + status +
                 '}';
     }
+
+    public String getPassword() {
+        return this.hashedPassword;
+    }
 }

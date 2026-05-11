@@ -6,4 +6,5 @@ import java.sql.Connection;
 
 public class AdminDAO {
     Connection conn = DatabaseConnection.getInstance().getConnection();
+
 }
