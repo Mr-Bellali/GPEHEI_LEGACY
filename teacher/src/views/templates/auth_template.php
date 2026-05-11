@@ -25,6 +25,13 @@
     </div>
     <!-- Right side: it will hold different forms based on the user needs -->
     <div class="w-1/2 h-full bg-[#7678ED] rounded-[10px] px-6 pb-6 pt-[15%]">
+        <?php if (!empty($_SESSION['error'])): ?>
+            <p class="text-white bg-red-500/40 text-sm px-4 py-2 rounded mb-4 absolute top-4 right-4">
+                <?= htmlspecialchars($_SESSION['error']) ?>
+            </p>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+        
         <?php include_once("views/forms/login_form.php"); ?>
     </div>
 
