@@ -9,7 +9,7 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     @Override
     public int getTotalStudents() throws DatabaseException {
-        String sql = "SELECT COUNT(*) FROM student";  // Changed from students to student
+        String sql = "SELECT COUNT(*) FROM student";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -26,7 +26,7 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     @Override
     public int getActiveProjects() throws DatabaseException {
-        String sql = "SELECT COUNT(*) FROM project WHERE status = 'Active'";  // Changed from projects to project
+        String sql = "SELECT COUNT(*) FROM project WHERE status = 'Active'";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -43,8 +43,7 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     @Override
     public int getPendingProjects() throws DatabaseException {
-        String sql = "SELECT COUNT(*) FROM project WHERE status = 'Pending'";  // Changed from projects to project
-
+        String sql = "SELECT COUNT(*) FROM project WHERE status = 'Pending'";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
