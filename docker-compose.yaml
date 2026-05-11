@@ -10,18 +10,38 @@ services:
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_NAME: EHEI_DB
+      DB_NAME: my_database
       DB_USER: root
       DB_PASSWORD: 12345678
     volumes:
       - ./teacher/src:/var/www/html
+
+  student:  
+    build:
+      context: ./student
+      dockerfile: Dockerfile
+    ports:
+      - "9001:80"
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: my_database
+      DB_USER: root
+      DB_PASS: 12345678
+    volumes:
+      - ./student/src:/var/www/html
+
+
+  
 
   mysql:
     image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: EHEI_DB
+      MYSQL_DATABASE: my_database
     ports:
       - "3306:3306"
     volumes:
