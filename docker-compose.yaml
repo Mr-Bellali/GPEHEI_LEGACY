@@ -16,6 +16,18 @@ services:
     volumes:
       - ./teacher_api/src:/var/www/html
 
+  teacher-ui:
+    build:
+      context: ./teacher_ui
+      target: dev
+      dockerfile: Dockerfile
+    volumes:
+      - ./teacher-ui:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+
   mysql:
     image: mysql:8.0
     restart: always
