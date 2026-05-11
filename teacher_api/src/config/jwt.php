@@ -2,7 +2,7 @@
 
 class JWT
 {
-    private static string $secret = 'your-super-secret-key';
+    private static string $secret = 'testing-jwt-signature';
 
     public static function generate(array $payload): string
     {

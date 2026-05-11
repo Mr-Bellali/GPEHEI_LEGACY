@@ -84,12 +84,12 @@ services:
     depends_on:
       - mysql
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: EHEI_DB
+      DB_USER: root
+      DB_PASSWORD: 12345678
+      JWT_SECRET: testing-jwt-signature
 
 volumes:
   mysql-data:
