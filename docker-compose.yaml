@@ -49,6 +49,26 @@ services:
   #   ports:
   #     - "3000:3000"
 
+  student:  
+    build:
+      context: ./student
+      dockerfile: Dockerfile
+    ports:
+      - "9001:80"
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: EHEI_DB
+      DB_USER: root
+      DB_PASS: 12345678
+    volumes:
+      - ./student/src:/var/www/html
+
+
+  
+
   mysql:
     image: mysql:8.0
     restart: always

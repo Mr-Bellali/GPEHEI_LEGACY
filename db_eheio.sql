@@ -92,7 +92,7 @@ CREATE TABLE groupe (
 CREATE TABLE groupeStudent (
 	groupe_id INT,
 	promotion varchar(10),
-   student_id INT,
+    student_id INT,
    groupeStudent_status enum('active', 'disabled') default 'active',
    PRIMARY KEY (groupe_id, promotion, student_id),
    CONSTRAINT fk_groupe_student_group FOREIGN KEY (groupe_id) REFERENCES groupe(id),
