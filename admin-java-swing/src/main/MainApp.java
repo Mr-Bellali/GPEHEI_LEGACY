@@ -11,7 +11,6 @@ public class MainApp {
 
     private static LoginFrame loginFrame;
     private static MasterFrame masterFrame;
-    Connection conn = DatabaseConnection.getInstance().getConnection();
 
     public static void main(String[] args) {
         // Set look and feel

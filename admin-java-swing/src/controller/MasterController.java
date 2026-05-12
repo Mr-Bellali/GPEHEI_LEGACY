@@ -6,8 +6,17 @@ import java.util.*;
 import view.master.*;
 import view.dashboard.DashboardPanel;
 import view.student.StudentsPanel;
+import view.teacher.TeachersPanel;
+import view.filiere.FilierePanel;
+import view.module.ModulePanel;
+import view.groupe.GroupePanel;
+import view.settings.SettingsPanel;
 import view.project.ProjectsPanel;
+import view.library.LibraryPanel;
+import view.reports.ReportsPanel;
+import view.master.AlertDialog;
 import service.DashboardService;
+import service.AlertService;
 
 public class MasterController {
 
@@ -15,11 +24,13 @@ public class MasterController {
     private final Map<String, MasterPanel> panels;
     private MasterPanel currentPanel;
     private DashboardService dashboardService;
+    private AlertService alertService;
 
     public MasterController(MasterFrame masterFrame) {
         this.masterFrame = masterFrame;
         this.panels = new HashMap<>();
         this.dashboardService = new DashboardService();
+        this.alertService = new AlertService();
 
         initializeMenuListeners();
         loadAllPanels();
@@ -33,13 +44,20 @@ public class MasterController {
         sidebar.addMenuActionListener(1, e -> switchToPanel("STUDENTS"));
         sidebar.addMenuActionListener(2, e -> switchToPanel("PROJECTS"));
         sidebar.addMenuActionListener(3, e -> switchToPanel("TEACHERS"));
-        sidebar.addMenuActionListener(4, e -> switchToPanel("REPORTS"));
-        sidebar.addMenuActionListener(5, e -> switchToPanel("CHAT"));
-        sidebar.addMenuActionListener(6, e -> switchToPanel("LIBRARY"));
-        sidebar.addMenuActionListener(7, e -> switchToPanel("HOMEWORK"));
-        sidebar.addMenuActionListener(8, e -> switchToPanel("GROUPS"));
-        sidebar.addMenuActionListener(9, e -> switchToPanel("MODULES"));
+        sidebar.addMenuActionListener(4, e -> switchToPanel("FILIERES"));
+        sidebar.addMenuActionListener(5, e -> switchToPanel("MODULES"));
+        sidebar.addMenuActionListener(6, e -> switchToPanel("REPORTS"));
+        sidebar.addMenuActionListener(7, e -> switchToPanel("LIBRARY"));
+        sidebar.addMenuActionListener(8, e -> switchToPanel("HOMEWORK"));
+        sidebar.addMenuActionListener(9, e -> switchToPanel("GROUPS"));
         sidebar.addMenuActionListener(10, e -> switchToPanel("SETTINGS"));
+
+        // Header notifications
+        masterFrame.getHeaderPanel().getNotificationsButton().addActionListener(e -> {
+            AlertDialog dialog = new AlertDialog(masterFrame);
+            dialog.setVisible(true);
+            loadDashboardData(); // Refresh unread count on dashboard
+        });
     }
 
     private void loadAllPanels() {
@@ -52,18 +70,58 @@ public class MasterController {
 
         // Students panel
         StudentsPanel studentsPanel = new StudentsPanel();
-        StudentController studentController = new StudentController(studentsPanel); // Initialize controller
+        new StudentController(studentsPanel);
         contentPanel.add(studentsPanel, "STUDENTS");
         panels.put("STUDENTS", studentsPanel);
 
+        // Teachers panel
+        TeachersPanel teachersPanel = new TeachersPanel();
+        new TeacherController(teachersPanel);
+        contentPanel.add(teachersPanel, "TEACHERS");
+        panels.put("TEACHERS", teachersPanel);
+
+        // Filieres panel
+        FilierePanel filierePanel = new FilierePanel();
+        new FiliereController(filierePanel);
+        contentPanel.add(filierePanel, "FILIERES");
+        panels.put("FILIERES", filierePanel);
+
+        // Modules panel
+        ModulePanel modulePanel = new ModulePanel();
+        new ModuleController(modulePanel);
+        contentPanel.add(modulePanel, "MODULES");
+        panels.put("MODULES", modulePanel);
+        
+        // Groups panel
+        GroupePanel groupPanel = new GroupePanel();
+        new GroupeController(groupPanel);
+        contentPanel.add(groupPanel, "GROUPS");
+        panels.put("GROUPS", groupPanel);
+
+        // Settings panel
+        SettingsPanel settingsPanel = new SettingsPanel();
+        contentPanel.add(settingsPanel, "SETTINGS");
+        panels.put("SETTINGS", settingsPanel);
+
         // Projects panel
         ProjectsPanel projectsPanel = new ProjectsPanel();
+        new ProjectController(projectsPanel);
         contentPanel.add(projectsPanel, "PROJECTS");
         panels.put("PROJECTS", projectsPanel);
 
+        // Library panel
+        LibraryPanel libraryPanel = new LibraryPanel();
+        new LibraryController(libraryPanel);
+        contentPanel.add(libraryPanel, "LIBRARY");
+        panels.put("LIBRARY", libraryPanel);
+
+        // Reports panel
+        ReportsPanel reportsPanel = new ReportsPanel();
+        contentPanel.add(reportsPanel, "REPORTS");
+        panels.put("REPORTS", reportsPanel);
+
         // Placeholder panels
-        String[] futurePanels = {"TEACHERS", "REPORTS", "CHAT", "LIBRARY",
-                "HOMEWORK", "GROUPS", "MODULES", "SETTINGS"};
+        String[] futurePanels = {"HOMEWORK"};
         for (String panelName : futurePanels) {
             JPanel placeholderPanel = createPlaceholderPanel(panelName);
             contentPanel.add(placeholderPanel, panelName);
@@ -80,36 +138,31 @@ public class MasterController {
 
     private void showDefaultPanel() {
         switchToPanel("DASHBOARD");
-        loadDashboardData(); // Load real data immediately
+        loadDashboardData();
     }
 
-    // Load real dashboard data from database
     private void loadDashboardData() {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             private Map<String, Integer> stats;
-
-            @Override
-            protected Void doInBackground() throws Exception {
+            @Override protected Void doInBackground() throws Exception {
                 stats = dashboardService.getDashboardStats();
                 return null;
             }
-
-            @Override
-            protected void done() {
+            @Override protected void done() {
                 try {
                     get();
                     DashboardPanel dashboard = (DashboardPanel) panels.get("DASHBOARD");
+                    int unread = stats.getOrDefault("unreadAlerts", 0);
                     if (dashboard != null && stats != null) {
                         dashboard.updateStats(
                                 stats.getOrDefault("totalStudents", 0),
                                 stats.getOrDefault("activeProjects", 0),
                                 stats.getOrDefault("pendingProjects", 0),
-                                stats.getOrDefault("unreadAlerts", 0)
+                                unread
                         );
                     }
-                } catch (Exception e) {
-                    System.err.println("Error loading dashboard: " + e.getMessage());
-                }
+                    masterFrame.getHeaderPanel().setNotificationCount(unread);
+                } catch (Exception e) { e.printStackTrace(); }
             }
         };
         worker.execute();
@@ -117,29 +170,19 @@ public class MasterController {
 
     public void switchToPanel(String panelName) {
         MasterPanel panel = panels.get(panelName);
-
         if (panel != null) {
-            if (currentPanel != null) {
-                currentPanel.onPanelHidden();
-            }
-
+            if (currentPanel != null) currentPanel.onPanelHidden();
             CardLayout cardLayout = masterFrame.getCardLayout();
             JPanel contentPanel = masterFrame.getContentPanel();
             cardLayout.show(contentPanel, panelName);
-
             masterFrame.getFooterPanel().setStatus("Showing: " + panelName);
-
-            // Load data if switching to dashboard
-            if (panelName.equals("DASHBOARD")) {
-                loadDashboardData();
-            } else {
+            if (panelName.equals("DASHBOARD")) loadDashboardData();
+            else {
                 panel.refreshData();
                 panel.onPanelShown();
             }
-
             currentPanel = panel;
             highlightMenuButton(panelName);
-
             contentPanel.revalidate();
             contentPanel.repaint();
         }
@@ -148,7 +191,6 @@ public class MasterController {
     private void highlightMenuButton(String panelName) {
         SidebarPanel sidebar = masterFrame.getSidebarPanel();
         int buttonIndex = getMenuIndexForPanel(panelName);
-
         if (buttonIndex >= 0 && buttonIndex < sidebar.getMenuButtons().size()) {
             sidebar.setActiveButton(sidebar.getMenuButtons().get(buttonIndex));
         }
@@ -160,12 +202,12 @@ public class MasterController {
             case "STUDENTS": return 1;
             case "PROJECTS": return 2;
             case "TEACHERS": return 3;
-            case "REPORTS": return 4;
-            case "CHAT": return 5;
-            case "LIBRARY": return 6;
-            case "HOMEWORK": return 7;
-            case "GROUPS": return 8;
-            case "MODULES": return 9;
+            case "FILIERES": return 4;
+            case "MODULES": return 5;
+            case "REPORTS": return 6;
+            case "LIBRARY": return 7;
+            case "HOMEWORK": return 8;
+            case "GROUPS": return 9;
             case "SETTINGS": return 10;
             default: return -1;
         }

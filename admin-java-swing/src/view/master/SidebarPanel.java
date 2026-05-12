@@ -24,12 +24,12 @@ public class SidebarPanel extends JPanel {
                 {"👨‍🎓", "Students"},
                 {"📁", "Projects"},
                 {"👩‍🏫", "Teachers"},
+                {"🎓", "Filieres"},
+                {"📦", "Modules"},
                 {"📈", "Reports"},
-                {"💬", "Chat"},
                 {"📚", "Library"},
                 {"📝", "Homework"},
                 {"👥", "Groups"},
-                {"📦", "Modules"},
                 {"⚙️", "Settings"}
         };
 

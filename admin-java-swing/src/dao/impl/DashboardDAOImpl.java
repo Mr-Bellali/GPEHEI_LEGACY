@@ -26,7 +26,8 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     @Override
     public int getActiveProjects() throws DatabaseException {
-        String sql = "SELECT COUNT(*) FROM project WHERE status = 'Active'";
+        // Updated to match db_eheio.sql column name and enum value
+        String sql = "SELECT COUNT(*) FROM project WHERE project_status = 'in_progress'";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -43,7 +44,9 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     @Override
     public int getPendingProjects() throws DatabaseException {
-        String sql = "SELECT COUNT(*) FROM project WHERE status = 'Pending'";
+        // Pending logic: maybe those submitted but not finished? 
+        // Or those missed? Let's use 'submitted' as pending for now.
+        String sql = "SELECT COUNT(*) FROM project WHERE project_status = 'submitted'";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

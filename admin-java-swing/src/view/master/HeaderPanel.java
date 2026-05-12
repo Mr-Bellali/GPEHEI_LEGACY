@@ -44,6 +44,7 @@ public class HeaderPanel extends JPanel {
 
         notificationsButton = new JButton("🔔");
         notificationsButton.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 18));
+        notificationsButton.setToolTipText("System Notifications");
         notificationsButton.setContentAreaFilled(false);
         notificationsButton.setBorderPainted(false);
         notificationsButton.setForeground(Color.WHITE);
@@ -78,6 +79,16 @@ public class HeaderPanel extends JPanel {
         loadUserInfo();
     }
 
+    public void setNotificationCount(int count) {
+        if (count > 0) {
+            notificationsButton.setText("🔔 (" + count + ")");
+            notificationsButton.setForeground(new Color(255, 255, 100)); // Slight yellow for attention
+        } else {
+            notificationsButton.setText("🔔");
+            notificationsButton.setForeground(Color.WHITE);
+        }
+    }
+
     private void loadUserInfo() {
         try {
             String token = SessionManager.getToken();
@@ -85,8 +96,9 @@ public class HeaderPanel extends JPanel {
                 Claims claims = JwtUtil.extractClaims(token);
                 String username = claims.getSubject();
                 String role = claims.get("role", String.class);
+                String name=claims.get("name",String.class);
 
-                welcomeLabel.setText("Welcome, " + username);
+                welcomeLabel.setText("Welcome, " + name);
                 roleLabel.setText("Role: " + role);
             }
         } catch (Exception e) {

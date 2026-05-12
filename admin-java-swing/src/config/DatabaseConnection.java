@@ -13,7 +13,6 @@ File → Project Structure → Libraries → + → Add JAR
 public class DatabaseConnection {
     //herer we use concespt singleton in owner app we have just one cycle life to access in db use instance
     private static DatabaseConnection instance;
-    private Connection connection;
 
     // DB CONFIG
     private static final String URL =
@@ -31,18 +30,9 @@ public class DatabaseConnection {
         try {
             // Load driver (optional for newer JDBC but safe)
             Class.forName("com.mysql.cj.jdbc.Driver");
-
-            this.connection = DriverManager.getConnection(
-                    URL, USER, PASSWORD
-            );
-
-            System.out.println("[DB] Connected to GPEHEI_LEGACY successfully.");
-
+            System.out.println("[DB] MySQL Driver loaded.");
         } catch (ClassNotFoundException e) {
             System.err.println("[DB ERROR] MySQL Driver not found");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.err.println("[DB ERROR] Connection failed");
             e.printStackTrace();
         }
     }
@@ -55,43 +45,27 @@ public class DatabaseConnection {
         return instance;
     }
 
-    // Get connection
+    // Get connection - returns a NEW connection every time to avoid sharing/closing issues
     public Connection getConnection() {
         try {
-            // Check if connection is null or closed
-            if (connection == null || connection.isClosed()) {
-                System.out.println("[DB] Connection was closed, reconnecting...");
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("[DB] Reconnected successfully.");
-            }
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            System.err.println("[DB ERROR] Failed to reconnect");
+            System.err.println("[DB ERROR] Failed to create new connection");
             e.printStackTrace();
+            return null;
         }
-        return connection;
     }
 
-    // Optional: close connection safely
-    public void closeConnection() {
-        if (connection != null) {
+    // No longer needs a shared connection field or closeConnection method that closes a shared instance
+    public void closeConnection(Connection conn) {
+        if (conn != null) {
             try {
-                if (!connection.isClosed()) {
-                    connection.close();
-                    System.out.println("[DB] Connection closed.");
+                if (!conn.isClosed()) {
+                    conn.close();
                 }
             } catch (SQLException e) {
-                System.err.println("[DB ERROR] Failed to close connection");
                 e.printStackTrace();
             }
-        }
-    }
-
-    // Check if connection is alive
-    public boolean isConnected() {
-        try {
-            return connection != null && !connection.isClosed();
-        } catch (SQLException e) {
-            return false;
         }
     }
 }

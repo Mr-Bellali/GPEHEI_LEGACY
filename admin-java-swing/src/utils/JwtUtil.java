@@ -26,11 +26,13 @@ public class JwtUtil {
     public static String generateToken(
             int adminId,
             String email,
-            String role
+            String role,
+            String first_name
     ) {
 
         return Jwts.builder()
                 .subject(email)
+                .claim("name",first_name)
                 .claim("adminId", adminId)
                 .claim("role", role)
                 .issuedAt(new Date())

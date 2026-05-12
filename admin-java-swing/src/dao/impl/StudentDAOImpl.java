@@ -18,13 +18,8 @@ public class StudentDAOImpl implements StudentDAO {
                 "email, hashed_password, phone, birth_date, StudentStatus, created_at, updated_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, student.getStudentNumber() != 0 ? student.getStudentNumber() : generateStudentNumber());
             stmt.setString(2, student.getFirstName());
@@ -42,15 +37,14 @@ public class StudentDAOImpl implements StudentDAO {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows > 0) {
-                rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
                 }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error inserting student: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return -1;
     }
@@ -81,13 +75,8 @@ public class StudentDAOImpl implements StudentDAO {
                 "ORDER BY id DESC";
 
         List<Student> students = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String searchPattern = "%" + keyword + "%";
             stmt.setString(1, searchPattern);
@@ -96,14 +85,13 @@ public class StudentDAOImpl implements StudentDAO {
             stmt.setString(4, searchPattern);
             stmt.setString(5, searchPattern);
 
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                students.add(mapResultSetToStudent(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    students.add(mapResultSetToStudent(rs));
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error searching students: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return students;
     }
@@ -130,24 +118,17 @@ public class StudentDAOImpl implements StudentDAO {
     public boolean existsByEmailExcludingId(String email, int excludeId) throws DatabaseException {
         String sql = "SELECT COUNT(*) FROM student WHERE email = ? AND id != ?";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
             stmt.setInt(2, excludeId);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error checking email: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return false;
     }
@@ -157,12 +138,8 @@ public class StudentDAOImpl implements StudentDAO {
         String sql = "UPDATE student SET first_name = ?, last_name = ?, email = ?, " +
                 "hashed_password = ?, phone = ?, StudentStatus = ?, updated_at = ? WHERE id = ?";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, student.getFirstName());
             stmt.setString(2, student.getLastName());
@@ -176,8 +153,6 @@ public class StudentDAOImpl implements StudentDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DatabaseException("Error updating student: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(null, stmt);
         }
     }
 
@@ -185,19 +160,13 @@ public class StudentDAOImpl implements StudentDAO {
     public boolean deactivate(int id) throws DatabaseException {
         String sql = "UPDATE student SET StudentStatus = 'INACTIVE', updated_at = ? WHERE id = ?";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setInt(2, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DatabaseException("Error deactivating student: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(null, stmt);
         }
     }
 
@@ -205,19 +174,13 @@ public class StudentDAOImpl implements StudentDAO {
     public boolean reactivate(int id) throws DatabaseException {
         String sql = "UPDATE student SET StudentStatus = 'ACTIVE', updated_at = ? WHERE id = ?";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setInt(2, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DatabaseException("Error reactivating student: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(null, stmt);
         }
     }
 
@@ -226,18 +189,12 @@ public class StudentDAOImpl implements StudentDAO {
         String sql = "DELETE FROM student WHERE StudentStatus = 'INACTIVE' " +
                 "AND updated_at < DATE_SUB(NOW(), INTERVAL ? DAY)";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, daysOld);
             return stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException("Error cleaning up inactive students: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(null, stmt);
         }
     }
 
@@ -248,88 +205,60 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     private Student executeSingleQuery(String sql, int id) throws DatabaseException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return mapResultSetToStudent(rs);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToStudent(rs);
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error executing query: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return null;
     }
 
     private List<Student> executeQueryList(String sql) throws DatabaseException {
         List<Student> students = new ArrayList<>();
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 students.add(mapResultSetToStudent(rs));
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error executing query: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return students;
     }
 
     private int executeCount(String sql) throws DatabaseException {
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error executing count: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return 0;
     }
 
     private boolean executeExists(String sql, String email) throws DatabaseException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DatabaseConnection.getInstance().getConnection();
-            stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
         } catch (SQLException e) {
             throw new DatabaseException("Error checking existence: " + e.getMessage(), e);
-        } finally {
-            closeQuietly(rs, stmt);
         }
         return false;
     }
@@ -371,10 +300,5 @@ public class StudentDAOImpl implements StudentDAO {
         }
 
         return student;
-    }
-
-    private void closeQuietly(ResultSet rs, Statement stmt) {
-        try { if (rs != null) rs.close(); } catch (SQLException e) {}
-        try { if (stmt != null) stmt.close(); } catch (SQLException e) {}
     }
 }

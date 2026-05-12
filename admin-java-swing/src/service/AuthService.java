@@ -61,7 +61,9 @@ public class AuthService {
         return JwtUtil.generateToken(
                 admin.getId(),
                 admin.getEmail(),
-                admin.getRole().name()
+                admin.getRole().name(),
+                admin.getFirstName()
+
         );
     }
 
