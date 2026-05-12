@@ -69,7 +69,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public List<Student> findAllActive() throws DatabaseException {
-        String sql = "SELECT * FROM student WHERE StudentStatus IN ('ACTIVE', 'SUSPENDED') ORDER BY id DESC";
+        String sql = "SELECT * FROM student WHERE StudentStatus IN ('ACTIVE') ORDER BY id DESC";
         return executeQueryList(sql);
     }
 
@@ -223,7 +223,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     @Override
     public int cleanUpInactive(int daysOld) throws DatabaseException {
-        String sql = "DELETE FROM student WHERE StudentStatus = 'INACTIVE' " +
+        String sql = "update  student set StudentStatus = 'INACTIVE' Where  StudentStatus = 'SUSPENDED'" +
                 "AND updated_at < DATE_SUB(NOW(), INTERVAL ? DAY)";
 
         Connection conn = null;
