@@ -18,5 +18,10 @@ class WorkspaceService
         $this->db->bind(':id', $id);
         return $this->db->resultSet();
     }
+
+    // Get all the groups for a module by id
+    // public function getAllGroupesForModuleId(int $id): array{
+    //     $this->db->query('SELECT * from groupe where')
+    // }
 }
 ?>

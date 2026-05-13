@@ -16,14 +16,14 @@ services:
     volumes:
       - ./teacher_api/src:/var/www/html
 
-  teacher-ui:
-    build:
-      context: ./teacher-ui
-      args:
-        NEXT_PUBLIC_API_URL: http://localhost:9000
-        NEXT_PUBLIC_ENV: local
-    ports:
-      - "3000:3000"
+  # teacher-ui:
+  #   build:
+  #     context: ./teacher-ui
+  #     args:
+  #       NEXT_PUBLIC_API_URL: http://localhost:9000
+  #       NEXT_PUBLIC_ENV: local
+  #   ports:
+  #     - "3000:3000"
 
   mysql:
     image: mysql:8.0

@@ -9,6 +9,11 @@ class WorkspaceController
         $modules = $this->json($this->service->getAllModulesForTeacherId((int) $params['id']));
     }
 
+    // Method to get all groups for a module
+    public function getGroupsForModuleById(array $params): void{
+        // $classes = $this->json($this->service->);
+    }
+
     // ── Helpers ──────────────────────────────────────────────
     private function json(mixed $data, int $status = 200): void
     {
