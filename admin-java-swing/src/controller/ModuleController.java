@@ -34,6 +34,9 @@ public class ModuleController {
         view.addDeleteListener(e -> deleteModule());
         view.addRefreshListener(e -> loadData());
         view.addFilterListener(e -> loadData());
+        view.addStatusFilterListener(e -> loadData());
+        view.addImportListener(e -> importCsv());
+        view.addExportListener(e -> exportCsv());
         // Listener for Filiere selection change to filter parent modules
         view.getFiliereCombo().addActionListener(e -> filterParentModules());
     }
@@ -41,15 +44,57 @@ public class ModuleController {
     private void loadData() {
         try {
             String filter = view.getFilterType();
+            String statusFilter = view.getFilterStatus();
             List<Module> list = moduleService.getAllModules();
             if ("Modules".equals(filter)) {
                 list.removeIf(m -> m.getType() != ModuleType.MOD);
             } else if ("Elements".equals(filter)) {
                 list.removeIf(m -> m.getType() != ModuleType.ELM);
             }
+            if ("Active".equals(statusFilter)) {
+                list.removeIf(m -> m.getStatus() != model.ModuleStatus.ACTIVE);
+            } else if ("Disabled".equals(statusFilter)) {
+                list.removeIf(m -> m.getStatus() != model.ModuleStatus.DISABLED);
+            }
             view.displayModules(list);
         } catch (DatabaseException e) {
             JOptionPane.showMessageDialog(view, "Error loading modules: " + e.getMessage());
+        }
+    }
+
+    private void importCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) {
+            try {
+                List<String[]> data = utils.CsvUtil.importFromCsv(fileChooser.getSelectedFile());
+                for (String[] row : data) {
+                    // Assuming CSV format matches: name, type(MOD/ELM), filiereId, parentModuleId, semester, status
+                    Module m = new Module();
+                    m.setName(row[0]);
+                    m.setType(ModuleType.valueOf(row[1]));
+                    m.setFiliereId(Integer.parseInt(row[2]));
+                    if (!row[3].equals("-")) m.setParentModuleId(Integer.parseInt(row[3]));
+                    m.setSemester(Integer.parseInt(row[4]));
+                    m.setStatus(model.ModuleStatus.valueOf(row[5].toUpperCase()));
+                    moduleService.createModule(m);
+                }
+                loadData();
+                JOptionPane.showMessageDialog(view, "Modules imported successfully!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(view, "Error importing CSV: " + e.getMessage());
+            }
+        }
+    }
+
+    private void exportCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
+            try {
+                utils.CsvUtil.exportToCsv(((javax.swing.JTable) view.getContentPanel().getComponent(1)).getModel(), fileChooser.getSelectedFile());
+                JOptionPane.showMessageDialog(view, "Modules exported successfully!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(view, "Error exporting CSV: " + e.getMessage());
+            }
         }
     }
 

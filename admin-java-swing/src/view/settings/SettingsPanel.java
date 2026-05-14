@@ -57,6 +57,43 @@ public class SettingsPanel extends JPanel implements MasterPanel {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        // System Settings Section
+        JPanel systemPanel = new JPanel(new GridBagLayout());
+        systemPanel.setBorder(BorderFactory.createTitledBorder("General App Settings"));
+        GridBagConstraints sgbc = new GridBagConstraints();
+        sgbc.insets = new Insets(8, 8, 8, 8);
+        sgbc.fill = GridBagConstraints.HORIZONTAL;
+
+        int sRow = 0;
+        sgbc.gridx = 0; sgbc.gridy = sRow;
+        systemPanel.add(new JLabel("System Theme:"), sgbc);
+        sgbc.gridx = 1;
+        JComboBox<String> themeCombo = new JComboBox<>(new String[]{"Light", "Dark"});
+        systemPanel.add(themeCombo, sgbc);
+        sRow++;
+
+        sgbc.gridx = 0; sgbc.gridy = sRow;
+        systemPanel.add(new JLabel("Language:"), sgbc);
+        sgbc.gridx = 1;
+        JComboBox<String> langCombo = new JComboBox<>(new String[]{"English", "French", "Arabic"});
+        systemPanel.add(langCombo, sgbc);
+        sRow++;
+
+        sgbc.gridx = 0; sgbc.gridy = sRow;
+        systemPanel.add(new JLabel("Notifications:"), sgbc);
+        sgbc.gridx = 1;
+        JComboBox<String> notifCombo = new JComboBox<>(new String[]{"On", "Off"});
+        systemPanel.add(notifCombo, sgbc);
+        sRow++;
+
+        sgbc.gridx = 0; sgbc.gridy = sRow; sgbc.gridwidth = 2;
+        JButton saveSystemBtn = new JButton("Save System Settings");
+        saveSystemBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "System settings saved (mock)!"));
+        systemPanel.add(saveSystemBtn, sgbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        content.add(systemPanel, gbc);
+
         // Project Capacity Section
         JPanel capPanel = new JPanel(new GridBagLayout());
         capPanel.setBorder(BorderFactory.createTitledBorder("Project Capacity Settings"));

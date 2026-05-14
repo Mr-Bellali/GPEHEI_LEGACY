@@ -24,6 +24,39 @@ public class FiliereController {
         view.addEditListener(e -> editFiliere());
         view.addDeleteListener(e -> deleteFiliere());
         view.addRefreshListener(e -> loadData());
+        view.addImportListener(e -> importCsv());
+        view.addExportListener(e -> exportCsv());
+    }
+
+    private void importCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showOpenDialog(view.getContentPanel()) == JFileChooser.APPROVE_OPTION) {
+            try {
+                List<String[]> data = utils.CsvUtil.importFromCsv(fileChooser.getSelectedFile());
+                for (String[] row : data) {
+                    Filiere f = new Filiere();
+                    f.setName(row[0]);
+                    f.setShortName(row[1]);
+                    service.createFiliere(f);
+                }
+                loadData();
+                JOptionPane.showMessageDialog(view.getContentPanel(), "Filieres imported successfully!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(view.getContentPanel(), "Error importing CSV: " + e.getMessage());
+            }
+        }
+    }
+
+    private void exportCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        if (fileChooser.showSaveDialog(view.getContentPanel()) == JFileChooser.APPROVE_OPTION) {
+            try {
+                utils.CsvUtil.exportToCsv(((javax.swing.JTable) view.getContentPanel().getComponent(1)).getModel(), fileChooser.getSelectedFile());
+                JOptionPane.showMessageDialog(view.getContentPanel(), "Filieres exported successfully!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(view.getContentPanel(), "Error exporting CSV: " + e.getMessage());
+            }
+        }
     }
 
     private void loadData() {

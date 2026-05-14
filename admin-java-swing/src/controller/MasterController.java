@@ -14,6 +14,7 @@ import view.settings.SettingsPanel;
 import view.project.ProjectsPanel;
 import view.library.LibraryPanel;
 import view.reports.ReportsPanel;
+import view.admin.AdminPanel;
 import view.master.AlertDialog;
 import service.DashboardService;
 import service.AlertService;
@@ -41,16 +42,17 @@ public class MasterController {
         SidebarPanel sidebar = masterFrame.getSidebarPanel();
 
         sidebar.addMenuActionListener(0, e -> switchToPanel("DASHBOARD"));
-        sidebar.addMenuActionListener(1, e -> switchToPanel("STUDENTS"));
-        sidebar.addMenuActionListener(2, e -> switchToPanel("PROJECTS"));
-        sidebar.addMenuActionListener(3, e -> switchToPanel("TEACHERS"));
-        sidebar.addMenuActionListener(4, e -> switchToPanel("FILIERES"));
-        sidebar.addMenuActionListener(5, e -> switchToPanel("MODULES"));
-        sidebar.addMenuActionListener(6, e -> switchToPanel("REPORTS"));
-        sidebar.addMenuActionListener(7, e -> switchToPanel("LIBRARY"));
-        sidebar.addMenuActionListener(8, e -> switchToPanel("HOMEWORK"));
-        sidebar.addMenuActionListener(9, e -> switchToPanel("GROUPS"));
-        sidebar.addMenuActionListener(10, e -> switchToPanel("SETTINGS"));
+        sidebar.addMenuActionListener(1, e -> switchToPanel("ADMINS"));
+        sidebar.addMenuActionListener(2, e -> switchToPanel("STUDENTS"));
+        sidebar.addMenuActionListener(3, e -> switchToPanel("PROJECTS"));
+        sidebar.addMenuActionListener(4, e -> switchToPanel("TEACHERS"));
+        sidebar.addMenuActionListener(5, e -> switchToPanel("FILIERES"));
+        sidebar.addMenuActionListener(6, e -> switchToPanel("MODULES"));
+        sidebar.addMenuActionListener(7, e -> switchToPanel("REPORTS"));
+        sidebar.addMenuActionListener(8, e -> switchToPanel("LIBRARY"));
+        sidebar.addMenuActionListener(9, e -> switchToPanel("HOMEWORK"));
+        sidebar.addMenuActionListener(10, e -> switchToPanel("GROUPS"));
+        sidebar.addMenuActionListener(11, e -> switchToPanel("SETTINGS"));
 
         // Header notifications
         masterFrame.getHeaderPanel().getNotificationsButton().addActionListener(e -> {
@@ -67,6 +69,12 @@ public class MasterController {
         DashboardPanel dashboardPanel = new DashboardPanel();
         contentPanel.add(dashboardPanel, "DASHBOARD");
         panels.put("DASHBOARD", dashboardPanel);
+
+        // Admin panel
+        AdminPanel adminPanel = new AdminPanel();
+        new AdminController(adminPanel);
+        contentPanel.add(adminPanel, "ADMINS");
+        panels.put("ADMINS", adminPanel);
 
         // Students panel
         StudentsPanel studentsPanel = new StudentsPanel();
@@ -199,16 +207,17 @@ public class MasterController {
     private int getMenuIndexForPanel(String panelName) {
         switch (panelName) {
             case "DASHBOARD": return 0;
-            case "STUDENTS": return 1;
-            case "PROJECTS": return 2;
-            case "TEACHERS": return 3;
-            case "FILIERES": return 4;
-            case "MODULES": return 5;
-            case "REPORTS": return 6;
-            case "LIBRARY": return 7;
-            case "HOMEWORK": return 8;
-            case "GROUPS": return 9;
-            case "SETTINGS": return 10;
+            case "ADMINS":    return 1;
+            case "STUDENTS":  return 2;
+            case "PROJECTS":  return 3;
+            case "TEACHERS":  return 4;
+            case "FILIERES":  return 5;
+            case "MODULES":   return 6;
+            case "REPORTS":   return 7;
+            case "LIBRARY":   return 8;
+            case "HOMEWORK":  return 9;
+            case "GROUPS":    return 10;
+            case "SETTINGS":  return 11;
             default: return -1;
         }
     }

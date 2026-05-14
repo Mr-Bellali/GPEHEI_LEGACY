@@ -30,6 +30,7 @@ public class AlertDAOImpl implements AlertDAO {
             while (rs.next()) {
                 Alert a = new Alert();
                 a.setId(rs.getInt("id"));
+                a.setSubject(rs.getString("subject")); // Ensure column exists
                 a.setMessage(rs.getString("message"));
                 a.setType(rs.getString("type"));
                 a.setRead(rs.getBoolean("is_read"));

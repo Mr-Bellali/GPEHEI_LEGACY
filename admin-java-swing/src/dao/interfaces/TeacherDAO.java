@@ -9,6 +9,7 @@ public interface TeacherDAO {
     Teacher findById(int id) throws DatabaseException;
     List<Teacher> findAll() throws DatabaseException;
     List<Teacher> findAllActive() throws DatabaseException;
+    List<Teacher> findByStatus(String status) throws DatabaseException;
     List<Teacher> searchTeachers(String keyword) throws DatabaseException;
     int getTotalCount() throws DatabaseException;
     int getActiveCount() throws DatabaseException;

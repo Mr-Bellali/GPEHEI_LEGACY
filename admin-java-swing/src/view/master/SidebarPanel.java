@@ -21,6 +21,7 @@ public class SidebarPanel extends JPanel {
         // Menu items with icons
         String[][] menuItems = {
                 {"📊", "Dashboard"},
+                {"👨‍💼", "Admins"},
                 {"👨‍🎓", "Students"},
                 {"📁", "Projects"},
                 {"👩‍🏫", "Teachers"},

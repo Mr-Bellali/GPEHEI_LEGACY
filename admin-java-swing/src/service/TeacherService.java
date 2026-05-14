@@ -34,7 +34,11 @@ public class TeacherService {
     }
 
     public List<Teacher> getAllTeachers() throws DatabaseException {
-        return teacherDAO.findAllActive();
+        return getTeachersByStatus("ALL");
+    }
+
+    public List<Teacher> getTeachersByStatus(String status) throws DatabaseException {
+        return teacherDAO.findByStatus(status);
     }
 
     public List<Teacher> searchTeachers(String keyword) throws DatabaseException {

@@ -9,6 +9,7 @@ public interface StudentDAO {
     Student findById(int id) throws DatabaseException;
     List<Student> findAll() throws DatabaseException;
     List<Student> findAllActive() throws DatabaseException;
+    List<Student> findByStatus(String status) throws DatabaseException;
     List<Student> searchStudents(String keyword) throws DatabaseException;
     int getTotalCount() throws DatabaseException;
     int getActiveCount() throws DatabaseException;

@@ -22,7 +22,9 @@ public class StudentsPanel extends JPanel implements MasterPanel {
     private JTable studentTable;
     private DefaultTableModel tableModel;
     private JTextField searchField;
+    private JComboBox<String> statusFilter;
     private JButton addButton, editButton, deactivateButton, reactivateButton, refreshButton;
+    private JButton importButton, exportButton;
     private JLabel totalLabel;
 
     public StudentsPanel() {
@@ -70,11 +72,11 @@ public class StudentsPanel extends JPanel implements MasterPanel {
         JPanel toolbar = new JPanel(new BorderLayout(12, 0));
         toolbar.setOpaque(false);
 
-        // Search
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        searchPanel.setOpaque(false);
+        // Search and Filter
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        leftPanel.setOpaque(false);
 
-        searchField = new JTextField(20);
+        searchField = new JTextField(15);
         searchField.setFont(new Font("Arial", Font.PLAIN, 13));
         searchField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(LIGHT_GRAY, 1, true),
@@ -83,28 +85,37 @@ public class StudentsPanel extends JPanel implements MasterPanel {
 
         JButton searchBtn = makeButton("Search", SECONDARY);
 
-        searchPanel.add(new JLabel("Search:"));
-        searchPanel.add(searchField);
-        searchPanel.add(searchBtn);
+        statusFilter = new JComboBox<>(new String[]{"ALL", "ACTIVE", "INACTIVE", "SUSPENDED"});
+        statusFilter.setPreferredSize(new Dimension(100, 32));
+
+        leftPanel.add(new JLabel("Search:"));
+        leftPanel.add(searchField);
+        leftPanel.add(searchBtn);
+        leftPanel.add(new JLabel("Status:"));
+        leftPanel.add(statusFilter);
 
         // Action buttons
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        buttonPanel.setOpaque(false);
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        rightPanel.setOpaque(false);
 
+        importButton = makeButton("Import", ORANGE);
+        exportButton = makeButton("Export", SECONDARY);
         addButton = makeButton("+ Add", PRIMARY);
         editButton = makeButton("Edit", SECONDARY);
         deactivateButton = makeButton("Deactivate", RED);
         reactivateButton = makeButton("Reactivate", GREEN);
         refreshButton = makeButton("Refresh", GREEN);
 
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(deactivateButton);
-        buttonPanel.add(reactivateButton);
+        rightPanel.add(importButton);
+        rightPanel.add(exportButton);
+        rightPanel.add(refreshButton);
+        rightPanel.add(addButton);
+        rightPanel.add(editButton);
+        rightPanel.add(deactivateButton);
+        rightPanel.add(reactivateButton);
 
-        toolbar.add(searchPanel, BorderLayout.WEST);
-        toolbar.add(buttonPanel, BorderLayout.EAST);
+        toolbar.add(leftPanel, BorderLayout.WEST);
+        toolbar.add(rightPanel, BorderLayout.EAST);
 
         return toolbar;
     }
@@ -242,6 +253,17 @@ public class StudentsPanel extends JPanel implements MasterPanel {
     public void addReactivateListener(ActionListener l) { reactivateButton.addActionListener(l); }
     public void addRefreshListener(ActionListener l) { refreshButton.addActionListener(l); }
     public void addSearchListener(ActionListener l) { searchField.addActionListener(l); }
+    public void addStatusFilterListener(ActionListener l) { statusFilter.addActionListener(l); }
+    public void addImportListener(ActionListener l) { importButton.addActionListener(l); }
+    public void addExportListener(ActionListener l) { exportButton.addActionListener(l); }
+
+    public String getSelectedStatus() {
+        return (String) statusFilter.getSelectedItem();
+    }
+
+    public TableModel getTableModel() {
+        return tableModel;
+    }
 
     @Override
     public String getPanelName() { return "Students"; }

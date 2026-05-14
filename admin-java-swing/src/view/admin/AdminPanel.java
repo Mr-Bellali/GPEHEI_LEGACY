@@ -1,4 +1,4 @@
-package view.teacher;
+package view.admin;
 
 import view.master.MasterPanel;
 import javax.swing.*;
@@ -6,30 +6,26 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
-import model.Teacher;
+import model.Admin;
 
-public class TeachersPanel extends JPanel implements MasterPanel {
+public class AdminPanel extends JPanel implements MasterPanel {
 
-    private static final Color PRIMARY    = new Color(0x2C, 0x3E, 0x50);
-    private static final Color SECONDARY  = new Color(0x34, 0x49, 0x5E);
+    private static final Color PRIMARY    = new Color(0x3D, 0x34, 0x8B);
+    private static final Color SECONDARY  = new Color(0x76, 0x78, 0xED);
     private static final Color WHITE      = new Color(0xFF, 0xFF, 0xFF);
     private static final Color LIGHT_GRAY = new Color(0xD1, 0xD1, 0xD1);
     private static final Color BG_PAGE    = new Color(0xF4, 0xF4, 0xF8);
     private static final Color RED        = new Color(0xE7, 0x4C, 0x3C);
     private static final Color GREEN      = new Color(0x27, 0xAE, 0x60);
     private static final Color ORANGE     = new Color(0xE6, 0x7E, 0x22);
-    private static final Color PURPLE     = new Color(0x8E, 0x44, 0xAD);
-    private static final Color DARK_ORANGE = new Color(0xD3, 0x54, 0x00);
 
-    private JTable teacherTable;
+    private JTable adminTable;
     private DefaultTableModel tableModel;
     private JTextField searchField;
-    private JComboBox<String> statusFilter;
-    private JButton addButton, editButton, deactivateButton, reactivateButton, refreshButton, assignmentsButton, supervisionButton;
-    private JButton importButton, exportButton;
+    private JButton addButton, editButton, deleteButton, refreshButton;
     private JLabel totalLabel;
 
-    public TeachersPanel() {
+    public AdminPanel() {
         setLayout(new BorderLayout());
         setBackground(BG_PAGE);
         initializeUI();
@@ -46,7 +42,7 @@ public class TeachersPanel extends JPanel implements MasterPanel {
         header.setBackground(PRIMARY);
         header.setBorder(BorderFactory.createEmptyBorder(13, 22, 13, 22));
 
-        JLabel title = new JLabel("Teachers Management");
+        JLabel title = new JLabel("Admins Management");
         title.setFont(new Font("Georgia", Font.BOLD, 20));
         title.setForeground(WHITE);
 
@@ -62,7 +58,7 @@ public class TeachersPanel extends JPanel implements MasterPanel {
         content.add(buildToolbar(), BorderLayout.NORTH);
         content.add(buildTable(), BorderLayout.CENTER);
 
-        totalLabel = new JLabel("Total teachers: 0");
+        totalLabel = new JLabel("Total admins: 0");
         totalLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         totalLabel.setForeground(new Color(0x55, 0x55, 0x66));
         content.add(totalLabel, BorderLayout.SOUTH);
@@ -74,7 +70,7 @@ public class TeachersPanel extends JPanel implements MasterPanel {
         JPanel toolbar = new JPanel(new BorderLayout(12, 0));
         toolbar.setOpaque(false);
 
-        // Search and Filter
+        // Search
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         leftPanel.setOpaque(false);
 
@@ -87,38 +83,23 @@ public class TeachersPanel extends JPanel implements MasterPanel {
 
         JButton searchBtn = makeButton("Search", SECONDARY);
 
-        statusFilter = new JComboBox<>(new String[]{"ALL", "ACTIVE", "DISABLED"});
-        statusFilter.setPreferredSize(new Dimension(100, 32));
-
         leftPanel.add(new JLabel("Search:"));
         leftPanel.add(searchField);
         leftPanel.add(searchBtn);
-        leftPanel.add(new JLabel("Status:"));
-        leftPanel.add(statusFilter);
 
         // Action buttons
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         rightPanel.setOpaque(false);
 
-        importButton = makeButton("Import", ORANGE);
-        exportButton = makeButton("Export", SECONDARY);
+        refreshButton = makeButton("Refresh", GREEN);
         addButton = makeButton("+ Add", PRIMARY);
         editButton = makeButton("Edit", SECONDARY);
-        assignmentsButton = makeButton("Assignments", PURPLE);
-        supervisionButton = makeButton("Supervision", DARK_ORANGE);
-        deactivateButton = makeButton("Deactivate", RED);
-        reactivateButton = makeButton("Reactivate", GREEN);
-        refreshButton = makeButton("Refresh", GREEN);
+        deleteButton = makeButton("Delete", RED);
 
-        rightPanel.add(importButton);
-        rightPanel.add(exportButton);
         rightPanel.add(refreshButton);
         rightPanel.add(addButton);
         rightPanel.add(editButton);
-        rightPanel.add(assignmentsButton);
-        rightPanel.add(supervisionButton);
-        rightPanel.add(deactivateButton);
-        rightPanel.add(reactivateButton);
+        rightPanel.add(deleteButton);
 
         toolbar.add(leftPanel, BorderLayout.WEST);
         toolbar.add(rightPanel, BorderLayout.EAST);
@@ -127,7 +108,7 @@ public class TeachersPanel extends JPanel implements MasterPanel {
     }
 
     private JScrollPane buildTable() {
-        String[] columns = {"ID", "First Name", "Last Name", "Email", "Status", "Created", "Updated"};
+        String[] columns = {"ID", "First Name", "Last Name", "Email", "Role", "Phone", "Status"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -135,10 +116,10 @@ public class TeachersPanel extends JPanel implements MasterPanel {
             }
         };
 
-        teacherTable = new JTable(tableModel);
-        styleTable(teacherTable);
+        adminTable = new JTable(tableModel);
+        styleTable(adminTable);
 
-        JScrollPane scrollPane = new JScrollPane(teacherTable);
+        JScrollPane scrollPane = new JScrollPane(adminTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(LIGHT_GRAY, 1));
         scrollPane.getViewport().setBackground(WHITE);
 
@@ -149,7 +130,7 @@ public class TeachersPanel extends JPanel implements MasterPanel {
         table.setFont(new Font("Arial", Font.PLAIN, 13));
         table.setRowHeight(35);
         table.setShowGrid(false);
-        table.setSelectionBackground(new Color(0x34, 0x49, 0x5E, 60));
+        table.setSelectionBackground(new Color(0x76, 0x78, 0xED, 60));
         table.setBackground(WHITE);
 
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
@@ -167,12 +148,10 @@ public class TeachersPanel extends JPanel implements MasterPanel {
                     c.setBackground(row % 2 == 0 ? WHITE : new Color(0xF0, 0xF0, 0xF8));
                 }
 
-                if (column == 4 && value != null) {
+                if (column == 6 && value != null) {
                     String status = value.toString();
-                    switch (status) {
-                        case "ACTIVE": c.setForeground(GREEN); break;
-                        case "DISABLED": c.setForeground(RED); break;
-                    }
+                    if ("ACTIVE".equalsIgnoreCase(status)) c.setForeground(GREEN);
+                    else if ("DISABLED".equalsIgnoreCase(status)) c.setForeground(RED);
                 } else {
                     c.setForeground(new Color(0x33, 0x33, 0x44));
                 }
@@ -182,7 +161,7 @@ public class TeachersPanel extends JPanel implements MasterPanel {
             }
         });
 
-        int[] widths = {50, 120, 120, 180, 100, 100, 100};
+        int[] widths = {50, 120, 120, 180, 100, 120, 100};
         for (int i = 0; i < widths.length; i++) {
             table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
         }
@@ -222,25 +201,25 @@ public class TeachersPanel extends JPanel implements MasterPanel {
         return button;
     }
 
-    public void displayTeachers(List<Teacher> teachers) {
+    public void displayAdmins(List<Admin> admins) {
         tableModel.setRowCount(0);
-        for (Teacher t : teachers) {
+        for (Admin a : admins) {
             Object[] row = {
-                    t.getId(),
-                    t.getFirstName(),
-                    t.getLastName(),
-                    t.getEmail(),
-                    t.getStatus().name(),
-                    t.getCreatedAt() != null ? t.getCreatedAt().toLocalDate().toString() : "N/A",
-                    t.getUpdatedAt() != null ? t.getUpdatedAt().toLocalDate().toString() : "N/A"
+                    a.getId(),
+                    a.getFirstName(),
+                    a.getLastName(),
+                    a.getEmail(),
+                    a.getRole().name(),
+                    a.getPhone(),
+                    a.getStatus().name()
             };
             tableModel.addRow(row);
         }
-        totalLabel.setText("Total teachers: " + teachers.size());
+        totalLabel.setText("Total admins: " + admins.size());
     }
 
-    public int getSelectedTeacherId() {
-        int row = teacherTable.getSelectedRow();
+    public int getSelectedAdminId() {
+        int row = adminTable.getSelectedRow();
         if (row >= 0) {
             return (int) tableModel.getValueAt(row, 0);
         }
@@ -253,35 +232,21 @@ public class TeachersPanel extends JPanel implements MasterPanel {
 
     public void addAddListener(ActionListener l) { addButton.addActionListener(l); }
     public void addEditListener(ActionListener l) { editButton.addActionListener(l); }
-    public void addDeactivateListener(ActionListener l) { deactivateButton.addActionListener(l); }
-    public void addReactivateListener(ActionListener l) { reactivateButton.addActionListener(l); }
+    public void addDeleteListener(ActionListener l) { deleteButton.addActionListener(l); }
     public void addRefreshListener(ActionListener l) { refreshButton.addActionListener(l); }
     public void addSearchListener(ActionListener l) { searchField.addActionListener(l); }
-    public void addAssignmentsListener(ActionListener l) { assignmentsButton.addActionListener(l); }
-    public void addSupervisionListener(ActionListener l) { supervisionButton.addActionListener(l); }
-    public void addStatusFilterListener(ActionListener l) { statusFilter.addActionListener(l); }
-    public void addImportListener(ActionListener l) { importButton.addActionListener(l); }
-    public void addExportListener(ActionListener l) { exportButton.addActionListener(l); }
-
-    public String getSelectedStatus() {
-        return (String) statusFilter.getSelectedItem();
-    }
-
-    public TableModel getTableModel() {
-        return tableModel;
-    }
 
     @Override
-    public String getPanelName() { return "Teachers"; }
+    public String getPanelName() { return "Admins"; }
 
     @Override
-    public void refreshData() { /* Will be handled by controller */ }
+    public void refreshData() { /* Handled by controller */ }
 
     @Override
     public JPanel getContentPanel() { return this; }
 
     @Override
-    public void onPanelShown() { /* Will be handled by controller */ }
+    public void onPanelShown() { /* Handled by controller */ }
 
     @Override
     public void onPanelHidden() {}

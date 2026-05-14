@@ -34,7 +34,11 @@ public class StudentService {
     }
 
     public List<Student> getAllStudents() throws DatabaseException {
-        return studentDAO.findAllActive();
+        return getStudentsByStatus("ALL");
+    }
+
+    public List<Student> getStudentsByStatus(String status) throws DatabaseException {
+        return studentDAO.findByStatus(status);
     }
 
     public List<Student> searchStudents(String keyword) throws DatabaseException {

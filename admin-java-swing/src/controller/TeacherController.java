@@ -33,23 +33,76 @@ public class TeacherController {
         view.addReactivateListener(e -> reactivateTeacher());
         view.addRefreshListener(e -> loadTeachers());
         view.addSearchListener(e -> loadTeachers());
+        view.addStatusFilterListener(e -> loadTeachers());
+        view.addImportListener(e -> importCsv());
+        view.addExportListener(e -> exportCsv());
     }
 
     private void loadTeachers() {
         try {
             String keyword = view.getSearchKeyword();
+            String status = view.getSelectedStatus();
             List<Teacher> teachers;
 
             if (keyword.isEmpty()) {
-                teachers = teacherService.getAllTeachers();
+                teachers = teacherService.getTeachersByStatus(status);
             } else {
                 teachers = teacherService.searchTeachers(keyword);
+                if (!"ALL".equals(status)) {
+                    teachers.removeIf(t -> !t.getStatus().name().equals(status));
+                }
             }
 
             view.displayTeachers(teachers);
         } catch (DatabaseException e) {
             JOptionPane.showMessageDialog(view, "Error loading teachers: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void exportCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export Teachers to CSV");
+        if (fileChooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
+            java.io.File file = fileChooser.getSelectedFile();
+            if (!file.getName().toLowerCase().endsWith(".csv")) {
+                file = new java.io.File(file.getAbsolutePath() + ".csv");
+            }
+            try {
+                utils.CsvUtil.exportToCsv(view.getTableModel(), file);
+                JOptionPane.showMessageDialog(view, "Export successful!");
+            } catch (java.io.IOException e) {
+                JOptionPane.showMessageDialog(view, "Error exporting: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void importCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Import Teachers from CSV");
+        if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) {
+            try {
+                List<String[]> data = utils.CsvUtil.importFromCsv(fileChooser.getSelectedFile());
+                int count = 0;
+                for (String[] row : data) {
+                    if (row.length >= 4) {
+                        Teacher t = new Teacher();
+                        t.setFirstName(row[1].trim());
+                        t.setLastName(row[2].trim());
+                        t.setEmail(row[3].trim());
+                        t.setPassword("Teacher123");
+                        t.setStatus(TeacherStatus.ACTIVE);
+                        try {
+                            teacherService.createTeacher(t);
+                            count++;
+                        } catch (Exception ex) {}
+                    }
+                }
+                JOptionPane.showMessageDialog(view, "Imported " + count + " teachers.");
+                loadTeachers();
+            } catch (java.io.IOException e) {
+                JOptionPane.showMessageDialog(view, "Error importing: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

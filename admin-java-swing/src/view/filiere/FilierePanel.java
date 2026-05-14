@@ -19,7 +19,7 @@ public class FilierePanel extends JPanel implements MasterPanel {
 
     private JTable filiereTable;
     private DefaultTableModel tableModel;
-    private JButton addButton, editButton, deleteButton, refreshButton;
+    private JButton addButton, editButton, deleteButton, refreshButton, importButton, exportButton;
     private JLabel totalLabel;
 
     public FilierePanel() {
@@ -69,7 +69,11 @@ public class FilierePanel extends JPanel implements MasterPanel {
         editButton = makeButton("Edit", SECONDARY);
         deleteButton = makeButton("Delete", RED);
         refreshButton = makeButton("Refresh", SECONDARY);
+        importButton = makeButton("Import CSV", SECONDARY);
+        exportButton = makeButton("Export CSV", SECONDARY);
 
+        toolbar.add(importButton);
+        toolbar.add(exportButton);
         toolbar.add(refreshButton);
         toolbar.add(addButton);
         toolbar.add(editButton);
@@ -119,6 +123,8 @@ public class FilierePanel extends JPanel implements MasterPanel {
     public void addEditListener(ActionListener l) { editButton.addActionListener(l); }
     public void addDeleteListener(ActionListener l) { deleteButton.addActionListener(l); }
     public void addRefreshListener(ActionListener l) { refreshButton.addActionListener(l); }
+    public void addImportListener(ActionListener l) { importButton.addActionListener(l); }
+    public void addExportListener(ActionListener l) { exportButton.addActionListener(l); }
 
     @Override public String getPanelName() { return "Filieres"; }
     @Override public void refreshData() {}

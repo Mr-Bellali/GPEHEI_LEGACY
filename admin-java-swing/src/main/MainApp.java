@@ -1,11 +1,9 @@
 package main;
-
-import config.DatabaseConnection;
 import controller.LoginController;
 import view.auth.LoginFrame;
 import view.master.MasterFrame;
 import javax.swing.*;
-import java.sql.Connection;
+
 
 public class MainApp {
 

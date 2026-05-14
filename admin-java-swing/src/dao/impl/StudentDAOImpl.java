@@ -68,6 +68,27 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
+    public List<Student> findByStatus(String status) throws DatabaseException {
+        if ("ALL".equalsIgnoreCase(status)) {
+            return findAll();
+        }
+        String sql = "SELECT * FROM student WHERE StudentStatus = ? ORDER BY id DESC";
+        List<Student> students = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    students.add(mapResultSetToStudent(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error finding students by status: " + e.getMessage(), e);
+        }
+        return students;
+    }
+
+    @Override
     public List<Student> searchStudents(String keyword) throws DatabaseException {
         String sql = "SELECT * FROM student WHERE " +
                 "(first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR " +

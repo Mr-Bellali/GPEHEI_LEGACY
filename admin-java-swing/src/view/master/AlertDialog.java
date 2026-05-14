@@ -61,7 +61,7 @@ public class AlertDialog extends JDialog {
 
     private JPanel createAlertItem(Alert a) {
         JPanel item = new JPanel(new BorderLayout());
-        item.setMaximumSize(new Dimension(400, 100)); // Slightly taller
+        item.setMaximumSize(new Dimension(400, 100));
         item.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230, 230, 230)),
             BorderFactory.createEmptyBorder(10, 15, 10, 15)
@@ -72,8 +72,10 @@ public class AlertDialog extends JDialog {
 
         String icon = a.getType().equals("warning") ? "⚠️ " : "ℹ️ ";
         String readStatus = a.isRead() ? " [READ]" : " [NEW]";
-        JLabel msgLabel = new JLabel("<html><b>" + icon + "</b> " + a.getMessage() + 
-                                   "<br><font color='#888888' size='2'>" + a.getCreatedAt() + readStatus + "</font></html>");
+        String text = "<html><b>" + icon + a.getSubject() + "</b><br>" + 
+                      a.getMessage() + "<br><font color='#888888' size='2'>" + 
+                      a.getCreatedAt() + readStatus + "</font></html>";
+        JLabel msgLabel = new JLabel(text);
         item.add(msgLabel, BorderLayout.CENTER);
 
         if (!a.isRead()) {

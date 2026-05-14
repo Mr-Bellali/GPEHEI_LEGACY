@@ -25,8 +25,9 @@ public class ModulePanel extends JPanel implements MasterPanel {
 
     private JTable moduleTable;
     private DefaultTableModel tableModel;
-    private JButton addButton, editButton, deleteButton, refreshButton;
+    private JButton addButton, editButton, deleteButton, refreshButton, importButton, exportButton;
     private JComboBox<String> typeFilter;
+    private JComboBox<String> statusFilter;
     private JComboBox<Filiere> filiereCombo; // Renamed from filiereFilter for consistency
     private JComboBox<Module> parentModuleCombo; // Renamed from parentModuleFilter
 
@@ -78,6 +79,7 @@ public class ModulePanel extends JPanel implements MasterPanel {
         toolbar.setOpaque(false);
 
         typeFilter = new JComboBox<>(new String[]{"All", "Modules", "Elements"});
+        statusFilter = new JComboBox<>(new String[]{"All", "Active", "Disabled"});
         filiereCombo = new JComboBox<>(); // Renamed field
         parentModuleCombo = new JComboBox<>(); // Renamed field
         parentModuleCombo.setEnabled(false); // Initially disabled
@@ -86,13 +88,19 @@ public class ModulePanel extends JPanel implements MasterPanel {
         editButton = makeButton("Edit", SECONDARY);
         deleteButton = makeButton("Delete", RED);
         refreshButton = makeButton("Refresh", SECONDARY);
+        importButton = makeButton("Import CSV", SECONDARY);
+        exportButton = makeButton("Export CSV", SECONDARY);
 
         toolbar.add(new JLabel("Filter Type:"));
         toolbar.add(typeFilter);
+        toolbar.add(new JLabel("Status:"));
+        toolbar.add(statusFilter);
         toolbar.add(new JLabel("Filiere:"));
         toolbar.add(filiereCombo); // Using renamed field
         toolbar.add(new JLabel("Parent Module:"));
         toolbar.add(parentModuleCombo); // Using renamed field
+        toolbar.add(importButton);
+        toolbar.add(exportButton);
         toolbar.add(refreshButton);
         toolbar.add(addButton);
         toolbar.add(editButton);
@@ -149,9 +157,17 @@ public class ModulePanel extends JPanel implements MasterPanel {
         return row >= 0 ? (int) tableModel.getValueAt(row, 0) : -1;
     }
 
+    public String getFilterStatus() {
+        return (String) statusFilter.getSelectedItem();
+    }
+    
     public String getFilterType() {
         return (String) typeFilter.getSelectedItem();
     }
+    
+    public void addImportListener(ActionListener l) { importButton.addActionListener(l); }
+    public void addExportListener(ActionListener l) { exportButton.addActionListener(l); }
+    public void addStatusFilterListener(ActionListener l) { statusFilter.addActionListener(l); }
     
     public Filiere getSelectedFiliere() {
         return (Filiere) filiereCombo.getSelectedItem();

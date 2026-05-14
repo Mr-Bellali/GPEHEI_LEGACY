@@ -87,6 +87,8 @@ public class HeaderPanel extends JPanel {
             notificationsButton.setText("🔔");
             notificationsButton.setForeground(Color.WHITE);
         }
+        notificationsButton.revalidate();
+        notificationsButton.repaint();
     }
 
     private void loadUserInfo() {

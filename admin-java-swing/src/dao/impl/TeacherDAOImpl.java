@@ -66,6 +66,27 @@ public class TeacherDAOImpl implements TeacherDAO {
     }
 
     @Override
+    public List<Teacher> findByStatus(String status) throws DatabaseException {
+        if ("ALL".equalsIgnoreCase(status)) {
+            return findAll();
+        }
+        String sql = "SELECT * FROM teacher WHERE teacher_status = ? ORDER BY id DESC";
+        List<Teacher> teachers = new ArrayList<>();
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status.toLowerCase());
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    teachers.add(mapResultSetToTeacher(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("Error finding teachers by status: " + e.getMessage(), e);
+        }
+        return teachers;
+    }
+
+    @Override
     public List<Teacher> searchTeachers(String keyword) throws DatabaseException {
         String sql = "SELECT * FROM teacher WHERE " +
                 "(first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR id LIKE ?) " +

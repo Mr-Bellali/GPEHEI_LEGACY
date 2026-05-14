@@ -25,12 +25,20 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public void save(Project p) throws DatabaseException {
-        String sql = "INSERT INTO project (project_title, project_description, project_status) VALUES (?, ?, ?)";
+        // Updated to match the DB schema enum values
+        String sql = "INSERT INTO project (project_title, project_description, project_status, project_type, privacy_type) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, p.getTitle());
             pstmt.setString(2, p.getDescription());
-            pstmt.setString(3, p.getStatus() != null ? p.getStatus().name().toLowerCase() : "in_progress");
+            
+            // Map enum to DB value. The model uses uppercase, DB uses snake_case lowercase
+            String status = p.getStatus() != null ? p.getStatus().name().toLowerCase() : "in_progress";
+            if (status.equals("proposed")) status = "in_progress";
+            
+            pstmt.setString(3, status);
+            pstmt.setString(4, "projet_synthèse"); 
+            pstmt.setString(5, "private");        
             pstmt.executeUpdate();
             try (ResultSet rs = pstmt.getGeneratedKeys()) {
                 if (rs.next()) p.setId(rs.getInt(1));
@@ -47,7 +55,11 @@ public class ProjectDAOImpl implements ProjectDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, p.getTitle());
             pstmt.setString(2, p.getDescription());
-            pstmt.setString(3, p.getStatus() != null ? p.getStatus().name().toLowerCase() : "in_progress");
+            
+            String status = p.getStatus() != null ? p.getStatus().name().toLowerCase() : "in_progress";
+            if (status.equals("proposed")) status = "in_progress";
+            
+            pstmt.setString(3, status);
             pstmt.setInt(4, p.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {

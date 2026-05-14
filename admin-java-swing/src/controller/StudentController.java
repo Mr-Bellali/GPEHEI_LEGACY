@@ -29,23 +29,79 @@ public class StudentController {
         view.addReactivateListener(e -> reactivateStudent());
         view.addRefreshListener(e -> loadStudents());
         view.addSearchListener(e -> loadStudents());
+        view.addStatusFilterListener(e -> loadStudents());
+        view.addImportListener(e -> importCsv());
+        view.addExportListener(e -> exportCsv());
     }
 
     private void loadStudents() {
         try {
             String keyword = view.getSearchKeyword();
+            String status = view.getSelectedStatus();
             List<Student> students;
 
             if (keyword.isEmpty()) {
-                students = studentService.getAllStudents();
+                students = studentService.getStudentsByStatus(status);
             } else {
                 students = studentService.searchStudents(keyword);
+                // Filter by status if not ALL
+                if (!"ALL".equals(status)) {
+                    students.removeIf(s -> !s.getStatus().name().equals(status));
+                }
             }
 
             view.displayStudents(students);
         } catch (DatabaseException e) {
             JOptionPane.showMessageDialog(view, "Error loading students: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void exportCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Export Students to CSV");
+        if (fileChooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
+            java.io.File file = fileChooser.getSelectedFile();
+            if (!file.getName().toLowerCase().endsWith(".csv")) {
+                file = new java.io.File(file.getAbsolutePath() + ".csv");
+            }
+            try {
+                utils.CsvUtil.exportToCsv(view.getTableModel(), file);
+                JOptionPane.showMessageDialog(view, "Export successful!");
+            } catch (java.io.IOException e) {
+                JOptionPane.showMessageDialog(view, "Error exporting: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void importCsv() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Import Students from CSV");
+        if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) {
+            try {
+                List<String[]> data = utils.CsvUtil.importFromCsv(fileChooser.getSelectedFile());
+                int count = 0;
+                for (String[] row : data) {
+                    if (row.length >= 5) {
+                        Student s = new Student();
+                        s.setFirstName(row[2].trim());
+                        s.setLastName(row[3].trim());
+                        s.setEmail(row[4].trim());
+                        s.setPassword("Student123"); // Default password
+                        s.setStatus(StudentStatus.ACTIVE);
+                        try {
+                            studentService.createStudent(s);
+                            count++;
+                        } catch (Exception ex) {
+                            // Skip or log error
+                        }
+                    }
+                }
+                JOptionPane.showMessageDialog(view, "Imported " + count + " students.");
+                loadStudents();
+            } catch (java.io.IOException e) {
+                JOptionPane.showMessageDialog(view, "Error importing: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
