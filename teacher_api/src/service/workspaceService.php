@@ -19,11 +19,13 @@ class WorkspaceService
         return $this->db->resultSet();
     }
 
-    // Get all the groups for a module by id
+    // Get all the groups for a module by filliere id
     public function getAllGroupsForModuleId(int $id): array
     {
-        $this->db->query('SELECT g.* FROM groupe g
+        $this->db->query('SELECT g.*, f.name_filier, f.short_name 
+        FROM groupe g
         INNER JOIN module m ON m.filiere_id = g.filiere_id
+        INNER JOIN filiere f ON f.id = g.filiere_id
         WHERE m.id = :id
         AND g.groupe_status = "active"');
         $this->db->bind(':id', $id);

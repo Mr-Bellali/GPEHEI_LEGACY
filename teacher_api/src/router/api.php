@@ -85,7 +85,6 @@ $router->get('/workspace/groups/:id', function($p) use ($workspaceController){
     $workspaceController->getGroupsForModuleById($p);
 });
 
-
 // Teacher Router, To be removed
 $controller = new TeacherController(new TeacherService());
 
