@@ -11,7 +11,7 @@ class WorkspaceController
 
     // Method to get all groups for a module
     public function getGroupsForModuleById(array $params): void{
-        // $classes = $this->json($this->service->);
+        $groups = $this->json($this->service->getAllGroupsForModuleId((int) $params['id']));
     }
 
     // ── Helpers ──────────────────────────────────────────────

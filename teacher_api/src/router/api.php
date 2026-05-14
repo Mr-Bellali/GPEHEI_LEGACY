@@ -78,6 +78,14 @@ $router->get('/workspace/modules', function($p) use ($workspaceController){
     $workspaceController->index($p);
 });
 
+// Get all the groups for a module by filliere id
+$router->get('/workspace/groups/:id', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+
+    $workspaceController->getGroupsForModuleById($p);
+});
+
+
 // Teacher Router, To be removed
 $controller = new TeacherController(new TeacherService());
 
