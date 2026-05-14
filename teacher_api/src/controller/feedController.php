@@ -15,6 +15,25 @@ class FeedController
         $this->json($feed);
     }
 
+    public function getComments(array $params): void
+    {
+        $comments = $this->service->getComments((int) $params['post_id']);
+        $this->json($comments);
+    }
+
+    public function storeComment(array $params): void
+    {
+        $data = $this->body();
+        $data['teacher_id'] = (int) $params['teacher_id'];
+        $data['post_id'] = (int) $data['post_id'];
+
+        if ($this->service->createComment($data)) {
+            $this->json(['message' => 'Comment added successfully']);
+        } else {
+            $this->json(['error' => 'Failed to add comment'], 500);
+        }
+    }
+
     public function store(array $params): void
     {
         $data = $this->body();

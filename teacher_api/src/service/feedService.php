@@ -24,7 +24,38 @@ class FeedService
                          AND p.module_id IS NULL 
                          AND p.groupe_id IS NULL
                          ORDER BY p.id DESC');
-        return $this->db->resultSet();
+        $posts = $this->db->resultSet();
+
+        // Convert image links to base64
+        foreach ($posts as &$post) {
+            $postArray = (array)$post;
+            if (!empty($postArray['image_link'])) {
+                $filePath = '/var/www/html/public' . $postArray['image_link'];
+                if (file_exists($filePath)) {
+                    $type = pathinfo($filePath, PATHINFO_EXTENSION);
+                    $data = file_get_contents($filePath);
+                    if (is_object($post)) {
+                        $post->image_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    } else {
+                        $post['image_base64'] = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    }
+                } else {
+                    if (is_object($post)) {
+                        $post->image_base64 = null;
+                    } else {
+                        $post['image_base64'] = null;
+                    }
+                }
+            } else {
+                if (is_object($post)) {
+                    $post->image_base64 = null;
+                } else {
+                    $post['image_base64'] = null;
+                }
+            }
+        }
+
+        return $posts;
     }
 
     public function createPost(array $data): int
@@ -35,6 +66,29 @@ class FeedService
         $this->db->bind(':teacher_id', $data['teacher_id']);
         $this->db->execute();
         return (int) $this->db->lastInsertId();
+    }
+
+    public function getComments(int $postId): array
+    {
+        $this->db->query('SELECT c.*, t.first_name as teacher_first, t.last_name as teacher_last,
+                         s.first_name as student_first, s.last_name as student_last
+                         FROM comment c
+                         LEFT JOIN teacher t ON c.teacher_id = t.id
+                         LEFT JOIN student s ON c.student_id = s.id
+                         WHERE c.post_id = :post_id
+                         ORDER BY c.id ASC');
+        $this->db->bind(':post_id', $postId);
+        return $this->db->resultSet();
+    }
+
+    public function createComment(array $data): bool
+    {
+        $this->db->query('INSERT INTO comment (content, teacher_id, post_id) 
+                         VALUES (:content, :teacher_id, :post_id)');
+        $this->db->bind(':content', $data['content']);
+        $this->db->bind(':teacher_id', $data['teacher_id']);
+        $this->db->bind(':post_id', $data['post_id']);
+        return $this->db->execute();
     }
 
     public function addAttachment(int $postId, string $link): void
@@ -68,9 +122,14 @@ class FeedService
             throw new Exception('Did not match data URI with image data');
         }
 
-        $dir = __DIR__ . '/../../public/uploads/posts/';
+        $dir = '/var/www/html/public/uploads/posts/';
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
+        }
+
+        // Final check to ensure directory exists before writing
+        if (!is_dir($dir)) {
+            throw new Exception('Upload directory could not be found: ' . $dir);
         }
 
         $fileName = time() . '_' . md5(uniqid()) . '.' . $type;

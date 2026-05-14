@@ -74,6 +74,17 @@ $router->get('/feed', function($p) use ($feedController) {
     $feedController->index();
 });
 
+$router->get('/feed/comments/:post_id', function($p) use ($feedController) {
+    AuthMiddleware::handle();
+    $feedController->getComments($p);
+});
+
+$router->post('/feed/comment', function($p) use ($feedController) {
+    AuthMiddleware::handle();
+    $p['teacher_id'] = $_REQUEST['auth']['sub'];
+    $feedController->storeComment($p);
+});
+
 $router->post('/feed/post', function($p) use ($feedController) {
     AuthMiddleware::handle();
     $p['teacher_id'] = $_REQUEST['auth']['sub'];

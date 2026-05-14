@@ -59,3 +59,13 @@ export async function createGlobalPost(data: { content: string; image?: string }
   const res = await api.post('/feed/post', data);
   return res.data;
 }
+
+export async function getComments(postId: number) {
+  const res = await api.get(`/feed/comments/${postId}`);
+  return res.data;
+}
+
+export async function createComment(data: { content: string; post_id: number }) {
+  const res = await api.post('/feed/comment', data);
+  return res.data;
+}
