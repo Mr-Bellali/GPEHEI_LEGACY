@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="admin-java-swing">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/admin-java-swing/mysql-connector-j-8.0.31-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/admin-java-swing/mysql-connector-j-8.0.31.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

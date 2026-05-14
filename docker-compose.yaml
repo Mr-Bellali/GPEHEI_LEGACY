@@ -1,31 +1,99 @@
 services:
-  server:
-    build:
-      context: ./teacher
-      dockerfile: Dockerfile
-    ports:
-      - "9000:80"
-    depends_on:
-      - mysql
-    environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_NAME: EHEI_DB
-      DB_USER: root
-      DB_PASSWORD: 12345678
-    volumes:
-      - ./teacher/src:/var/www/html
 
   mysql:
     image: mysql:8.0
+    container_name: gpehei_mysql
     restart: always
+
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: EHEI_DB
+      MYSQL_ROOT_PASSWORD: "123456789"
+      MYSQL_DATABASE: GPEHEI_LEGACY
+
     ports:
       - "3306:3306"
+
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    networks:
+      - gpehei_network
+
+
+
+
+  teacher_server:
+    build:
+      context: ./teacher
+      dockerfile: Dockerfile
+
+    container_name: teacher_server
+
+    depends_on:
+      - mysql
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: GPEHEI_LEGACY
+      DB_USER: root
+      DB_PASSWORD: "123456789"
+
+    ports:
+      - "9000:80"
+
+    volumes:
+      - ./teacher/src:/var/www/html
+
+    networks:
+      - gpehei_network
+
+
+
+  admin_java:
+    build:
+      context: ./admin-java-swing
+      dockerfile: Dockerfile
+
+    container_name: admin_java
+
+    depends_on:
+      - mysql
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: GPEHEI_LEGACY
+      DB_USER: root
+      DB_PASSWORD: "123456789"
+
+    networks:
+      - gpehei_network
+
+
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: gpehei_phpmyadmin
+
+    depends_on:
+      - mysql
+
+    environment:
+      PMA_HOST: mysql
+
+    ports:
+      - "8080:80"
+
+    networks:
+      - gpehei_network
+
+
 
 volumes:
   mysql-data:
+
+
+
+networks:
+  gpehei_network:

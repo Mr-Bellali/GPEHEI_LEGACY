@@ -21,8 +21,10 @@ public class DatabaseConnection {
     //private static final String USER = "root";
     //private static final String PASSWORD = ""; // change if needed
     //in ubuntu check buttom script
-    private static final String USER = "javauser";
-    private static final String PASSWORD = "1234";
+    //private static final String USER = "javauser";
+    //private static final String PASSWORD = "1234";
+    private static final String USER = "root";
+    private static final String PASSWORD = "123456789";
 
 
 
