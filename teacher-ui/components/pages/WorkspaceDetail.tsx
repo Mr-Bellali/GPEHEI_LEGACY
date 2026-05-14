@@ -40,7 +40,7 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden">
+            <div className="bg-white rounded-3xl w-full max-w-2xl border border-gray-100 overflow-hidden">
                 <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-[#3D348B]">{title}</h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full text-gray-400">
@@ -172,7 +172,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                         </p>
                     </div>
                     {/* Workflow button requested by user */}
-                    <button className="px-6 py-2 bg-white text-[#7678ED] rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg">
+                    <button className="px-6 py-2 bg-white text-[#7678ED] rounded-full font-semibold hover:bg-gray-100 transition-colors border border-white/20">
                         Workflow
                     </button>
                 </div>
@@ -180,12 +180,12 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
 
             {/* Tabs */}
             <div className="flex justify-center mb-6">
-                <div className="bg-white/50 p-1 rounded-full flex gap-1 shadow-sm">
+                <div className="bg-white/50 p-1 rounded-full flex gap-1 border border-gray-200/50">
                     <button
                         onClick={() => setActiveTab('flow')}
                         className={cn(
                             "px-8 py-2 rounded-full text-sm font-medium transition-all",
-                            activeTab === 'flow' ? "bg-[#3D348B] text-white shadow-md" : "text-[#404359] hover:bg-white/50"
+                            activeTab === 'flow' ? "bg-[#3D348B] text-white" : "text-[#404359] hover:bg-white/50"
                         )}
                     >
                         Flow
@@ -194,7 +194,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                         onClick={() => setActiveTab('assignments')}
                         className={cn(
                             "px-8 py-2 rounded-full text-sm font-medium transition-all",
-                            activeTab === 'assignments' ? "bg-[#3D348B] text-white shadow-md" : "text-[#404359] hover:bg-white/50"
+                            activeTab === 'assignments' ? "bg-[#3D348B] text-white" : "text-[#404359] hover:bg-white/50"
                         )}
                     >
                         Assignments and courses
@@ -211,7 +211,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                 ) : activeTab === 'flow' ? (
                     <div className="max-w-4xl mx-auto flex flex-col gap-6">
                         {/* Create Post Card */}
-                        <div className="bg-white rounded-2xl p-6 shadow-sm">
+                        <div className="bg-white rounded-2xl p-6 border border-gray-100">
                             <div className="flex gap-4">
                                 <div className="w-10 h-10 rounded-full bg-[#7678ED] flex-shrink-0" />
                                 <div className="flex-1 flex flex-col gap-3">
@@ -238,7 +238,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                         {/* Posts List */}
                         {flowData.length > 0 ? (
                             flowData.map((post) => (
-                                <div key={post.id} className="bg-white rounded-2xl p-6 shadow-sm border border-transparent hover:border-[#7678ED]/30 transition-all">
+                                <div key={post.id} className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#7678ED]/30 transition-all">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex gap-4 items-center">
                                             <div className="w-10 h-10 rounded-full bg-[#7678ED] flex items-center justify-center text-white font-bold">
@@ -281,7 +281,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                                             key={course.id} 
                                             onClick={() => setSelectedAssignment(course)}
                                             className={cn(
-                                                "bg-white p-3 rounded-xl shadow-sm border-l-4 flex items-center gap-3 cursor-pointer transition-all",
+                                                "bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer transition-all",
                                                 selectedAssignment?.id === course.id && selectedAssignment?.type === 'course' 
                                                     ? "border-[#3D348B] bg-gray-50 scale-[1.02]" 
                                                     : "border-transparent hover:border-[#3D348B]/30"
@@ -316,7 +316,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                                             key={hw.id} 
                                             onClick={() => setSelectedAssignment(hw)}
                                             className={cn(
-                                                "bg-white p-3 rounded-xl shadow-sm border-l-4 flex items-center gap-3 cursor-pointer transition-all",
+                                                "bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 cursor-pointer transition-all",
                                                 selectedAssignment?.id === hw.id && selectedAssignment?.type === 'homework' 
                                                     ? "border-[#7678ED] bg-gray-50 scale-[1.02]" 
                                                     : "border-transparent hover:border-[#7678ED]/30"
@@ -345,7 +345,7 @@ export default function WorkspaceDetail({ module, group, onBack }: WorkspaceDeta
                         </div>
 
                         {/* Main Assignment Content */}
-                        <div className="flex-1 bg-white rounded-3xl p-8 shadow-sm min-h-[600px]">
+                        <div className="flex-1 bg-white rounded-3xl p-8 border border-gray-100 min-h-[600px]">
                             {selectedAssignment ? (
                                 <div>
                                     <div className="flex justify-between items-center mb-6">

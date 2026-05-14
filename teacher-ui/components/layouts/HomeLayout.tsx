@@ -78,7 +78,7 @@ export default function HomeLayout() {
         <div className="fixed top-[14px] left-1/2 -translate-x-1/2 z-50">
           <div
             ref={navPillRef}
-            className="bg-[#3D348B] rounded-full p-1.5 inline-flex items-center gap-0.5 relative shadow-xl"
+            className="bg-[#3D348B] rounded-full p-1.5 inline-flex items-center gap-0.5 relative border border-white/10"
           >
             <div
               className="absolute top-1.5 h-[calc(100%-12px)] bg-[#7678ED] rounded-full shadow transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
@@ -109,7 +109,7 @@ export default function HomeLayout() {
               <ChevronDown className="w-4 h-4 text-[#404359]/60 stroke-[2.5]" />
             </button>
             {showLanguageDropdown && (
-              <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-lg py-1 min-w-[80px] z-50">
+              <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl border border-gray-100 py-1 min-w-[80px] z-50">
                 {['EN', 'FR', 'AR'].map(lang => (
                   <button
                     key={lang}

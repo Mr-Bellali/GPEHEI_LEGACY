@@ -20,13 +20,13 @@ const Library = () => {
           <h1 className="text-3xl font-bold text-[#3D348B]">Digital Library</h1>
           <p className="text-gray-500">Manage your documents and resources</p>
         </div>
-        <button className="px-6 py-3 bg-[#3D348B] text-white rounded-full font-bold hover:bg-[#2d2570] transition-all flex items-center gap-2 shadow-lg">
+        <button className="px-6 py-3 bg-[#3D348B] text-white rounded-full font-bold hover:bg-[#2d2570] transition-all flex items-center gap-2 border border-[#3D348B]">
           <Plus className="w-5 h-5" /> Upload Document
         </button>
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white rounded-3xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="bg-white rounded-3xl p-4 border border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center bg-gray-50 rounded-2xl px-4 py-2 w-full sm:w-96 gap-3">
           <Search className="w-5 h-5 text-gray-400" />
           <input 
@@ -59,7 +59,7 @@ const Library = () => {
       {view === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {documents.map((doc) => (
-            <div key={doc.id} className="bg-white rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all group border border-transparent hover:border-[#7678ED]/20">
+            <div key={doc.id} className="bg-white rounded-3xl p-5 border border-gray-100 transition-all group border border-transparent hover:border-[#7678ED]/20">
               <div className="flex justify-between items-start mb-4">
                 <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#7678ED] group-hover:bg-[#7678ED] group-hover:text-white transition-all">
                   <FileText className="w-6 h-6" />
@@ -77,7 +77,7 @@ const Library = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-gray-50 text-[#404359] text-sm font-bold">
               <tr>

@@ -108,7 +108,7 @@ export default function Workspace() {
                                 <div
                                     key={group.id}
                                     onClick={() => setSelectedGroup(group)}
-                                    className="flex flex-col px-6 py-4 bg-[#7678ED] hover:bg-[#3D348B] rounded-2xl h-[140px] justify-between transition-all duration-300 cursor-pointer shadow-sm"
+                                    className="flex flex-col px-6 py-4 bg-[#7678ED] hover:bg-[#3D348B] rounded-2xl h-[140px] justify-between transition-all duration-300 cursor-pointer border border-white/10"
                                 >
                                     <h2 className="text-2xl text-white font-bold">
                                         Group {group.group_name}
@@ -132,7 +132,7 @@ export default function Workspace() {
                             <div
                                 key={module.module_id}
                                 onClick={() => handleModuleClick(module)}
-                                className="bg-white rounded-3xl p-6 shadow-sm transition-all duration-300 cursor-pointer border border-transparent hover:border-[#7678ED]/30 group"
+                                className="bg-white rounded-3xl p-6 border border-gray-100 transition-all duration-300 cursor-pointer border border-transparent hover:border-[#7678ED]/30 group"
                             >
                                 <div className="w-12 h-12 bg-[#7678ED]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#7678ED] transition-colors">
                                     <FileText className="w-6 h-6 text-[#7678ED] group-hover:text-white transition-colors" />

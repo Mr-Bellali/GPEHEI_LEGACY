@@ -22,7 +22,7 @@ const Chat = () => {
   return (
     <div className="flex h-[calc(100vh-100px)] max-w-7xl mx-auto px-4 pb-4 gap-6">
       {/* Sidebar - Contacts */}
-      <div className="w-80 flex-shrink-0 bg-white rounded-[32px] shadow-sm flex flex-col overflow-hidden">
+      <div className="w-80 flex-shrink-0 bg-white rounded-[32px] border border-gray-100 flex flex-col overflow-hidden">
         <div className="p-6 border-b border-gray-100">
           <h1 className="text-2xl font-bold text-[#3D348B] mb-4">Messages</h1>
           <div className="flex items-center bg-gray-50 rounded-2xl px-4 py-2 gap-3">
@@ -62,7 +62,7 @@ const Chat = () => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 bg-white rounded-[32px] shadow-sm flex flex-col overflow-hidden">
+      <div className="flex-1 bg-white rounded-[32px] border border-gray-100 flex flex-col overflow-hidden">
         {/* Chat Header */}
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <div className="flex items-center gap-4">
@@ -86,7 +86,7 @@ const Chat = () => {
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-gray-50/50">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex flex-col ${msg.isMe ? 'items-end' : 'items-start'}`}>
-              <div className={`max-w-[70%] p-4 rounded-2xl text-sm ${msg.isMe ? 'bg-[#3D348B] text-white rounded-tr-none' : 'bg-white text-[#404359] rounded-tl-none shadow-sm'}`}>
+              <div className={`max-w-[70%] p-4 rounded-2xl text-sm ${msg.isMe ? 'bg-[#3D348B] text-white rounded-tr-none' : 'bg-white text-[#404359] rounded-tl-none border border-gray-100'}`}>
                 {msg.content}
               </div>
               <span className="text-[10px] text-gray-400 mt-1">{msg.time}</span>
@@ -96,7 +96,7 @@ const Chat = () => {
 
         {/* Message Input */}
         <div className="p-6 bg-white">
-          <div className="flex items-center gap-4 bg-gray-50 rounded-[24px] p-2 pl-6 shadow-inner">
+          <div className="flex items-center gap-4 bg-gray-50 rounded-[24px] p-2 pl-6 border border-gray-100">
             <input 
               type="text" 
               placeholder="Type your message here..." 

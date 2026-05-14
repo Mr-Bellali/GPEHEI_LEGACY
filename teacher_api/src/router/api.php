@@ -64,6 +64,22 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 // Register routes
 $router = new Router();
 
+// Feed routes
+require_once __DIR__ . '/../service/feedService.php';
+require_once __DIR__ . '/../controller/feedController.php';
+$feedController = new FeedController(new FeedService());
+
+$router->get('/feed', function($p) use ($feedController) {
+    AuthMiddleware::handle();
+    $feedController->index();
+});
+
+$router->post('/feed/post', function($p) use ($feedController) {
+    AuthMiddleware::handle();
+    $p['teacher_id'] = $_REQUEST['auth']['sub'];
+    $feedController->store($p);
+});
+
 // Auth routes (public)
 $authController = new AuthController(new AuthService());
 $router->post('/auth/login',    [$authController, 'login']);

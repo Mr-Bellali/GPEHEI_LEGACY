@@ -49,3 +49,13 @@ export async function createHomework(data: { title: string; content: string; dea
   const res = await api.post('/workspace/homework', data);
   return res.data;
 }
+
+export async function getGlobalFeed() {
+  const res = await api.get('/feed');
+  return res.data;
+}
+
+export async function createGlobalPost(data: { content: string; image?: string }) {
+  const res = await api.post('/feed/post', data);
+  return res.data;
+}
