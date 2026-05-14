@@ -69,7 +69,7 @@ $authController = new AuthController(new AuthService());
 $router->post('/auth/login',    [$authController, 'login']);
 
 // Workspace routes
-$workspaceController = new WorkspaceController(New WorkspaceService());
+$workspaceController = new WorkspaceController(new WorkspaceService());
 $router->get('/workspace/modules', function($p) use ($workspaceController){
     AuthMiddleware::handle();
 
