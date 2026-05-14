@@ -6,12 +6,64 @@ class WorkspaceController
     }
     public function index(array $params): void
     {
-        $modules = $this->json($this->service->getAllModulesForTeacherId((int) $params['id']));
+        $modules = $this->service->getAllModulesForTeacherId((int) $params['id']);
+        $this->json($modules);
     }
 
-    // Method to get all groups for a module
-    public function getGroupsForModuleById(array $params): void{
-        $groups = $this->json($this->service->getAllGroupsForModuleId((int) $params['id']));
+    public function getGroups(array $params): void
+    {
+        $teacherId = (int) $params['teacher_id'];
+        $moduleId = (int) $params['module_id'];
+        $groups = $this->service->getGroupsForTeacherModule($teacherId, $moduleId);
+        $this->json($groups);
+    }
+
+    public function getFlow(array $params): void
+    {
+        $moduleId = (int) $params['module_id'];
+        $groupId = (int) $params['group_id'];
+        $flow = $this->service->getFlow($moduleId, $groupId);
+        $this->json($flow);
+    }
+
+    public function getAssignments(array $params): void
+    {
+        $moduleId = (int) $params['module_id'];
+        $groupId = (int) $params['group_id'];
+        $assignments = $this->service->getAssignments($moduleId, $groupId);
+        $this->json($assignments);
+    }
+
+    public function createPost(array $params): void
+    {
+        $data = $this->body();
+        $data['teacher_id'] = (int) $params['teacher_id'];
+        if ($this->service->createPost($data)) {
+            $this->json(['message' => 'Post created successfully']);
+        } else {
+            $this->json(['error' => 'Failed to create post'], 500);
+        }
+    }
+
+    public function createCourse(array $params): void
+    {
+        $data = $this->body();
+        if ($this->service->createCourse($data)) {
+            $this->json(['message' => 'Course created successfully']);
+        } else {
+            $this->json(['error' => 'Failed to create course'], 500);
+        }
+    }
+
+    public function createHomework(array $params): void
+    {
+        $data = $this->body();
+        $data['teacher_id'] = (int) $params['teacher_id'];
+        if ($this->service->createHomework($data)) {
+            $this->json(['message' => 'Homework created successfully']);
+        } else {
+            $this->json(['error' => 'Failed to create homework'], 500);
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────

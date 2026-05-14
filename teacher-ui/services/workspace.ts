@@ -17,28 +17,35 @@ const LEVEL_NAMES: Record<number, string> = {
 
 export async function getAllModules() {
   const res = await api.get('/workspace/modules');
-  const modules: Module[] = res.data;
+  return res.data;
+}
 
-  // Group modules by academic level
-  const groupsByLevel: Record<number, { name: string; total_groups: number; groups: any[] }> = {};
+export async function getGroupsForModule(moduleId: number) {
+  const res = await api.get(`/workspace/groups/${moduleId}`);
+  return res.data;
+}
 
-  modules.forEach((module) => {
-    const level = module.year_academic_level;
-    if (!groupsByLevel[level]) {
-      groupsByLevel[level] = {
-        name: LEVEL_NAMES[level] ?? `Year ${level}`,
-        total_groups: 0,
-        groups: [],
-      };
-    }
-    groupsByLevel[level].groups.push({
-      id: module.id,
-      group_name: module.module_name,
-      filiere_name: '',
-      student_count: 0,
-    });
-    groupsByLevel[level].total_groups++;
-  });
+export async function getFlow(moduleId: number, groupId: number) {
+  const res = await api.get(`/workspace/flow/${moduleId}/${groupId}`);
+  return res.data;
+}
 
-  return { filieres: [], groupsByLevel };
+export async function getAssignments(moduleId: number, groupId: number) {
+  const res = await api.get(`/workspace/assignments/${moduleId}/${groupId}`);
+  return res.data;
+}
+
+export async function createPost(data: { title: string; content: string; module_id: number; groupe_id: number }) {
+  const res = await api.post('/workspace/post', data);
+  return res.data;
+}
+
+export async function createCourse(data: { title: string; content: string; module_id: number }) {
+  const res = await api.post('/workspace/course', data);
+  return res.data;
+}
+
+export async function createHomework(data: { title: string; content: string; deadline: string; module_id: number; groupe_id: number }) {
+  const res = await api.post('/workspace/homework', data);
+  return res.data;
 }

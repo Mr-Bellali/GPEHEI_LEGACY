@@ -72,17 +72,41 @@ $router->post('/auth/login',    [$authController, 'login']);
 $workspaceController = new WorkspaceController(new WorkspaceService());
 $router->get('/workspace/modules', function($p) use ($workspaceController){
     AuthMiddleware::handle();
-
-    // Inject auth id into params
     $p['id'] = $_REQUEST['auth']['sub'];
     $workspaceController->index($p);
 });
 
-// Get all the groups for a module by filliere id
-$router->get('/workspace/groups/:id', function($p) use ($workspaceController){
+$router->get('/workspace/groups/:module_id', function($p) use ($workspaceController){
     AuthMiddleware::handle();
+    $p['teacher_id'] = $_REQUEST['auth']['sub'];
+    $workspaceController->getGroups($p);
+});
 
-    $workspaceController->getGroupsForModuleById($p);
+$router->get('/workspace/flow/:module_id/:group_id', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+    $workspaceController->getFlow($p);
+});
+
+$router->get('/workspace/assignments/:module_id/:group_id', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+    $workspaceController->getAssignments($p);
+});
+
+$router->post('/workspace/post', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+    $p['teacher_id'] = $_REQUEST['auth']['sub'];
+    $workspaceController->createPost($p);
+});
+
+$router->post('/workspace/course', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+    $workspaceController->createCourse($p);
+});
+
+$router->post('/workspace/homework', function($p) use ($workspaceController){
+    AuthMiddleware::handle();
+    $p['teacher_id'] = $_REQUEST['auth']['sub'];
+    $workspaceController->createHomework($p);
 });
 
 // Teacher Router, To be removed

@@ -1,73 +1,80 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Users, Inbox, AlertCircle, Loader2 } from 'lucide-react';
+import { ChevronDown, Users, Inbox, AlertCircle, Loader2, ChevronLeft, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getAllModules } from '@/services/workspace';
+import WorkspaceDetail from './WorkspaceDetail';
+import { getAllModules, getGroupsForModule } from '@/services/workspace';
+
+interface Module {
+    module_id: number;
+    module_name: string;
+    semester: number;
+    name_filier: string;
+    filiere_id: number;
+}
 
 interface Group {
     id: number;
     group_name: string;
     filiere_name: string;
-    student_count: number;
-}
-
-interface LevelData {
-    name: string;
-    total_groups: number;
-    groups: Group[];
-}
-
-interface Filiere {
-    id: number;
-    name_filier: string;
 }
 
 export default function Workspace() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
-    const [filiereLoading, setFiliereLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [filieres, setFilieres] = useState<Filiere[]>([]);
-    const [selectedFiliere, setSelectedFiliere] = useState<Filiere | null>(null);
-    const [groupsByLevel, setGroupsByLevel] = useState<Record<number, LevelData>>({});
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [modules, setModules] = useState<Module[]>([]);
+    const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+    const [loadingGroups, setLoadingGroups] = useState(false);
 
-    // Initial load
     useEffect(() => {
-        fetchWorkspace();
+        fetchModules();
     }, []);
 
-    // Close dropdown on outside click
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            if (!target.closest('[data-dropdown]')) setShowDropdown(false);
-        };
-        document.addEventListener('click', handler);
-        return () => document.removeEventListener('click', handler);
-    }, []);
-
-    const fetchWorkspace = async () => {
+    const fetchModules = async () => {
         setLoading(true);
         setError(null);
         try {
             const data = await getAllModules();
-            setFilieres(data.filieres);
-            setGroupsByLevel(data.groupsByLevel);
-            if (data.filieres.length > 0) setSelectedFiliere(data.filieres[0]);
+            setModules(data);
         } catch (err) {
-            setError('Failed to load workspace. Please try again.');
+            setError('Failed to load modules. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
-    // const handleFiliereSelect = (filiere: Filiere) => {
-    //     setSelectedFiliere(filiere);
-    //     setShowDropdown(false);
-    //     fetchWorkspace(filiere.id);
-    // };
+    const handleModuleClick = async (module: Module) => {
+        setSelectedModule(module);
+        setLoadingGroups(true);
+        try {
+            const data = await getGroupsForModule(module.module_id);
+            setGroups(data);
+            if (data.length === 1) {
+                setSelectedGroup(data[0]);
+            }
+        } catch (err) {
+            console.error('Failed to load groups:', err);
+        } finally {
+            setLoadingGroups(false);
+        }
+    };
+
+    if (selectedModule && selectedGroup) {
+        return (
+            <WorkspaceDetail 
+                module={selectedModule} 
+                group={selectedGroup} 
+                onBack={() => {
+                    setSelectedGroup(null);
+                    setSelectedModule(null);
+                }} 
+            />
+        );
+    }
 
     if (loading) {
         return (
@@ -77,111 +84,72 @@ export default function Workspace() {
         );
     }
 
-    if (error) {
-        return (
-            <div className="flex flex-col items-center justify-center py-24 gap-3">
-                <AlertCircle className="w-16 h-16 text-red-400" />
-                <h3 className="text-lg font-medium text-gray-900">Something went wrong</h3>
-                <p className="text-gray-500">{error}</p>
-                <button
-                    onClick={() => fetchWorkspace()}
-                    className="mt-2 px-4 py-2 bg-[#3D348B] text-white rounded-full text-sm hover:bg-[#2d2570]"
-                >
-                    Retry
-                </button>
-            </div>
-        );
-    }
-
-    const hasGroups = Object.values(groupsByLevel).some(l => l.total_groups > 0);
-
     return (
-        <div className="mx-auto flex flex-col gap-6">
-
-            {/* Filiere dropdown */}
-            <div className="w-full h-fit flex">
-                <div className="relative" data-dropdown>
-                    <button
-                        onClick={() => setShowDropdown(prev => !prev)}
-                        className="flex items-center gap-1 cursor-pointer select-none h-[50px] bg-white px-4 rounded-full"
-                    >
-                        <span className="text-sm font-medium text-[#404359]">
-                            {selectedFiliere?.name_filier ?? 'Select Filiere'}
-                        </span>
-                        <ChevronDown className="w-4 h-4 text-[#404359]/60 stroke-[2.5]" />
-                    </button>
-
-                    {showDropdown && (
-                        <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-lg py-1 min-w-[200px] z-50">
-                            {filieres.length > 0 ? (
-                                filieres.map(filiere => (
-                                    <button
-                                        key={filiere.id}
-                                        // onClick={() => handleFiliereSelect(filiere)}
-                                        className="block w-full text-left px-4 py-2 text-sm text-[#404359] hover:bg-gray-50 rounded-full"
-                                    >
-                                        {filiere.name_filier}
-                                    </button>
-                                ))
-                            ) : (
-                                <span className="block px-4 py-2 text-sm text-gray-500">No filieres assigned</span>
-                            )}
+        <div className="mx-auto flex flex-col gap-6 max-w-7xl mb-5">
+            {selectedModule ? (
+                <div className="flex flex-col gap-6">
+                    <div className="flex items-center gap-4">
+                        <button 
+                            onClick={() => setSelectedModule(null)}
+                            className="p-2 hover:bg-gray-200 rounded-full transition-colors"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-[#3D348B]" />
+                        </button>
+                        <h1 className="text-2xl font-bold text-[#3D348B]">Select Group for {selectedModule.module_name}</h1>
+                    </div>
+                    
+                    {loadingGroups ? (
+                        <div className="flex justify-center py-12">
+                            <Loader2 className="w-8 h-8 animate-spin text-[#3D348B]" />
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {groups.map(group => (
+                                <div
+                                    key={group.id}
+                                    onClick={() => setSelectedGroup(group)}
+                                    className="flex flex-col px-6 py-4 bg-[#7678ED] hover:bg-[#3D348B] rounded-2xl h-[140px] justify-between transition-all duration-300 cursor-pointer shadow-sm"
+                                >
+                                    <h2 className="text-2xl text-white font-bold">
+                                        Group {group.group_name}
+                                    </h2>
+                                    <div className="flex items-center justify-between text-white/90 text-sm">
+                                        <p>{group.filiere_name}</p>
+                                        <div className="flex items-center gap-1">
+                                            <Users className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
-            </div>
+            ) : (
+                <div className="flex flex-col gap-8">
 
-            {/* Groups content */}
-            <div className="flex flex-col gap-2">
-                {filiereLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                        <Loader2 className="w-8 h-8 animate-spin text-[#3D348B]" />
-                    </div>
-                ) : hasGroups ? (
-                    [1, 2, 3, 4, 5].map(level => {
-                        const levelData = groupsByLevel[level];
-                        if (!levelData || levelData.total_groups === 0) return null;
-
-                        return (
-                            <div key={level} className="mb-6">
-                                {/* Level title */}
-                                <div className="w-full flex flex-col gap-1 mb-2">
-                                    <h1 className="font-bold text-xl text-[#3D348B]">{levelData.name}</h1>
-                                    <hr className="border-[#3D348B]" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {modules.map(module => (
+                            <div
+                                key={module.module_id}
+                                onClick={() => handleModuleClick(module)}
+                                className="bg-white rounded-3xl p-6 shadow-sm transition-all duration-300 cursor-pointer border border-transparent hover:border-[#7678ED]/30 group"
+                            >
+                                <div className="w-12 h-12 bg-[#7678ED]/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-[#7678ED] transition-colors">
+                                    <FileText className="w-6 h-6 text-[#7678ED] group-hover:text-white transition-colors" />
                                 </div>
-
-                                {/* Groups grid */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    {levelData.groups.map(group => (
-                                        <div
-                                            key={group.id}
-                                            onClick={() => router.push(`/group/${group.id}`)}
-                                            className="flex flex-col px-4 py-3 bg-[#7678ED] hover:bg-[#3D348B] rounded-[10px] h-[120px] justify-between transition-colors duration-200 cursor-pointer"
-                                        >
-                                            <h2 className="text-xl text-white font-semibold">
-                                                {group.group_name}
-                                            </h2>
-                                            <div className="flex items-center justify-between text-white text-xs">
-                                                <p>{group.filiere_name}</p>
-                                                <p className="flex items-center gap-1">
-                                                    <Users className="w-4 h-4" />
-                                                    {group.student_count}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                <h3 className="text-xl font-bold text-[#3D348B] mb-1">{module.module_name}</h3>
+                                <p className="text-sm text-gray-500 mb-4">{module.name_filier}</p>
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <span className="text-xs font-semibold text-[#7678ED] bg-[#7678ED]/10 px-3 py-1 rounded-full">
+                                        Semester {module.semester}
+                                    </span>
+                                    <ChevronDown className="w-5 h-5 text-gray-300 -rotate-90" />
                                 </div>
                             </div>
-                        );
-                    })
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-12 gap-3">
-                        <Inbox className="w-16 h-16 text-gray-400" />
-                        <h3 className="text-lg font-medium text-gray-900">No groups found</h3>
-                        <p className="text-gray-500">No groups available for this filiere.</p>
+                        ))}
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 }
