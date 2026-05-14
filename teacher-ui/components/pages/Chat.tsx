@@ -20,7 +20,7 @@ const Chat = () => {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-100px)] max-w-7xl mx-auto px-4 pb-4 gap-6">
+    <div className="flex h-full mx-auto px-4 pb-10 gap-6">
       {/* Sidebar - Contacts */}
       <div className="w-80 flex-shrink-0 bg-white rounded-[32px] border border-gray-100 flex flex-col overflow-hidden">
         <div className="p-6 border-b border-gray-100">
