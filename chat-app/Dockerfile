@@ -18,6 +18,8 @@ RUN g++ \
         src/server/Server.cpp \
         src/server/Session.cpp \
         src/server/SessionManager.cpp \
+        src/server/MessageHandler.cpp \
+        src/server/ConversationService.cpp \
         src/auth/JwtValidator.cpp \
         src/db/Database.cpp \
     -Isrc \
