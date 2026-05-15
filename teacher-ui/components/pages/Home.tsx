@@ -69,7 +69,7 @@ const Home = () => {
       <div className="mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 pb-12">
         
         {/* Left Sidebar */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
+        <div className="lg:col-span-3 flex flex-col gap-6 lg:sticky lg:top-0 lg:self-start z-10">
           <ProfileCard />
           <CommunitiesCard />
         </div>
@@ -100,7 +100,7 @@ const Home = () => {
         </div>
 
         {/* Right Sidebar */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
+        <div className="lg:col-span-3 flex flex-col gap-6 lg:sticky lg:top-0 lg:self-start z-10">
           <EventsCard />
           <PeopleCard />
         </div>
