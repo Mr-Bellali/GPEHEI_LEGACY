@@ -85,7 +85,7 @@ export default function Workspace() {
     }
 
     return (
-        <div className="mx-auto flex flex-col gap-6 max-w-7xl mb-5">
+        <div className="mx-auto flex flex-col gap-6 mb-5">
             {selectedModule ? (
                 <div className="flex flex-col gap-6">
                     <div className="flex items-center gap-4">
