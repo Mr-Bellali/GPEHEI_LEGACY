@@ -1,23 +1,29 @@
 import { jwtDecode } from 'jwt-decode';
 
+const TOKEN_KEY = 'accessToken'
+
 // Checks if the user is logged in by verifying the presence of an access token
 export const isLoggedIn = () => {
-  return !!localStorage.getItem("accessToken");
+  if (typeof window === 'undefined') return false
+  return !!localStorage.getItem(TOKEN_KEY);
 };
 
 // Retrieves the access token from localStorage
 export const getToken = () => {
-  return localStorage.getItem("accessToken");
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(TOKEN_KEY);
 };
 
 // Clears the access token from localStorage
 export const clearToken = () => {
-  localStorage.removeItem("accessToken");
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(TOKEN_KEY);
 };
 
 // Stores the access token in localStorage
 export const storeToken = (token: string) => {
-  localStorage.setItem("accessToken", token);
+  if (typeof window === 'undefined') return
+  localStorage.setItem(TOKEN_KEY, token);
 };
 
 // Function to check if the token is expired
